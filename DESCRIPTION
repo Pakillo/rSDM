@@ -1,0 +1,21 @@
+Package: rSDM
+Type: Package
+Title: Species Distribution Modelling and niche modelling in R
+Version: 0.0.2
+Date: 2015-06-24
+Author: F. Rodriguez-Sanchez, unless specified in particular functions.
+Maintainer: F. Rodriguez-Sanchez <f.rodriguez.sanc@gmail.com>
+Description: Functions for niche modelling and SDM
+License: CC-BY-NC-SA
+Imports:
+    sp,
+    rgdal,
+    dismo,
+    ggmap,
+    rworldmap,
+    leafletR,
+    mapmisc,
+    scales
+Suggests:
+    knitr
+VignetteBuilder: knitr
