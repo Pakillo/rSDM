@@ -15,9 +15,10 @@ coordinates must be contained in columns named as ("x", "y") or ("lon", "lat"). 
 'google' for Google maps background (using dismo::gmap),
 'coast' for coastlines (coastsCoarse shapefile from rworldmap package),
 'ggmap' for any of the maps provided by get_map function in ggmap package,
-'leaflet' for an interactive HTML map using leafletR, or
+'leaflet' for an interactive HTML map using leaflet, or
 'mapmisc' for using any of the layers available in \code{mapmisc} package, or
-'kml' for producing a KML file to be opened with Google Earth.}
+'kml' for producing a KML file to be opened with Google Earth.
+Alternatively, a Raster object to be used as background.}
 
 \item{projection}{CRS object giving the projection system of species occurrences.
 Leave missing if species occurrences are in geographical projection, or 'locs' is a SpatialPoints* object containing projection information (proj4string).}
@@ -28,7 +29,7 @@ Leave missing if species occurrences are in geographical projection, or 'locs' i
 
 \item{psize}{Point size for depicting species' occurrences. Default is 1 (cex=1).}
 
-\item{add}{Logical. Add these occurrences to previous map (e.g. for a new species?). Default is FALSE.}
+\item{add}{Logical. Add these occurrences to previous map (e.g. for a new species?). Default is FALSE. Note this feature doesn't work for all map types.}
 
 \item{mapmisc_server}{character. Server/type of background map to be used when bg = "mapmisc". Run \code{osmTiles()} to see all the available layers.}
 
@@ -53,7 +54,7 @@ If using ggmap and stamen maps, large regions seem to give problems.
 # Using acaule dataset from dismo package:
 data(acaule)
 occmap(locs=acaule)
-occmap(locs=acaule, bg="coast")
+occmap(locs=acaule, bg="google")
 occmap(locs=acaule, bg="google", type="satellite")   # using options from dismo:gmap
 
 
@@ -62,7 +63,7 @@ occmap(locs=acaule, bg="google", type="satellite")   # using options from dismo:
 locs_redux <- subset(acaule, lon>-80 & lon< -60 & lat>-30 & lat< -10)
 occmap(locs=locs_redux,
            bg="ggmap", maptype='watercolor', source='stamen',
-           color="darkgreen", psize=4)
+           pcol="darkgreen", psize=4)
 
 
 # Plot occurrences in a specific country:
@@ -74,16 +75,12 @@ occmap(locs=subset(acaule, lon>-80 & lon< -60 & lat>-30 & lat< -10))
 
 
 # Add transparency to points
-occmap(locs=acaule, pcol=rgb(t(col2rgb("red")), alpha=255*0.7, maxColorValue=255))
+occmap(locs=acaule, pcol="red", alpha=0.7)
 
 # Save plot directly to file
 pdf("map.pdf", paper="a4r")
 occmap(locs=acaule, type="satellite", scale=2)
 dev.off()
-
-crs.geo <- CRS("+init=epsg:4326")
-crs.laea <- CRS("+init=epsg:3035")
-
 
 ## Providing spatial objects ##
 data(meuse)

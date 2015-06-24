@@ -13,12 +13,12 @@
 #' @return A map.
 #' @import sp
 #' @import rgdal
+#' @import raster
 #' @importFrom scales alpha
 #' @importFrom dismo gmap Mercator
-#' @importFrom ggmap get_map
-#' @importFrom raster KML
+#' @import ggmap
 #' @import rworldmap
-#' @import leafletR
+#' @import leaflet
 #' @import mapmisc
 #' @author F. Rodriguez-Sanchez. Code for using spplot taken from Oscar Perpinan's blog.
 #' @param locs A matrix, dataframe or SpatialPointsDataFrame containing coordinates of species occurrences. If a simple (non-spatial) dataframe,
@@ -29,13 +29,14 @@
 #' 'google' for Google maps background (using dismo::gmap),
 #' 'coast' for coastlines (coastsCoarse shapefile from rworldmap package),
 #' 'ggmap' for any of the maps provided by get_map function in ggmap package,
-#' 'leaflet' for an interactive HTML map using leafletR, or
+#' 'leaflet' for an interactive HTML map using leaflet, or
 #' 'mapmisc' for using any of the layers available in \code{mapmisc} package, or
 #' 'kml' for producing a KML file to be opened with Google Earth.
+#' Alternatively, a Raster object to be used as background.
 #' @param pcol Colour to be used for points representing species' occurrences. Default is "red".
 #' @param alpha Colour transparency for points between 0 (fully transparent) and 1 (fully opaque).
 #' @param psize Point size for depicting species' occurrences. Default is 1 (cex=1).
-#' @param add Logical. Add these occurrences to previous map (e.g. for a new species?). Default is FALSE.
+#' @param add Logical. Add these occurrences to previous map (e.g. for a new species?). Default is FALSE. Note this feature doesn't work for all map types.
 #' @param mapmisc_server character. Server/type of background map to be used when bg = "mapmisc". Run \code{osmTiles()} to see all the available layers.
 #' @param ... additional parameters to be passed to
 #' dismo::gmap if bg == 'google'
@@ -50,7 +51,7 @@
 #' # Using acaule dataset from dismo package:
 #' data(acaule)
 #' occmap(locs=acaule)
-#' occmap(locs=acaule, bg="coast")
+#' occmap(locs=acaule, bg="google")
 #' occmap(locs=acaule, bg="google", type="satellite")   # using options from dismo:gmap
 #'
 #'
@@ -59,7 +60,7 @@
 #' locs_redux <- subset(acaule, lon>-80 & lon< -60 & lat>-30 & lat< -10)
 #' occmap(locs=locs_redux,
 #'            bg="ggmap", maptype='watercolor', source='stamen',
-#'            color="darkgreen", psize=4)
+#'            pcol="darkgreen", psize=4)
 #'
 #'
 #' # Plot occurrences in a specific country:
@@ -71,16 +72,12 @@
 #'
 #'
 #' # Add transparency to points
-#' occmap(locs=acaule, pcol=rgb(t(col2rgb("red")), alpha=255*0.7, maxColorValue=255))
+#' occmap(locs=acaule, pcol="red", alpha=0.7)
 #'
 #' # Save plot directly to file
 #' pdf("map.pdf", paper="a4r")
 #' occmap(locs=acaule, type="satellite", scale=2)
 #' dev.off()
-#'
-#' crs.geo <- CRS("+init=epsg:4326")
-#' crs.laea <- CRS("+init=epsg:3035")
-#'
 #'
 #' ## Providing spatial objects ##
 #' data(meuse)
@@ -144,11 +141,11 @@ occmap <- function(locs, bg='google', projection, pcol='red', alpha = 1, psize=1
 
   if (bg=='google'){
     # Get Google map
-    locs.GM <- Mercator(coordinates(locs))
-    bgmap <- gmap(locs.GM, lonlat = TRUE, ...)
+    locs.GM <- dismo::Mercator(coordinates(locs))
+    bgmap <- dismo::gmap(locs.GM, lonlat = TRUE, ...)
 
     # Plot
-    if (add==FALSE) plot(bgmap)
+    if (add==FALSE) plot(bgmap, axes = FALSE)
     points(coordinates(locs), pch=20, col=pcol, cex=psize)
   }
 
@@ -170,7 +167,9 @@ occmap <- function(locs, bg='google', projection, pcol='red', alpha = 1, psize=1
   ##### Using Oscar Perpinan's approach (spplot) #####
   # see http://procomun.wordpress.com/2013/04/24/stamen-maps-with-spplot/
 
-  if (bg == "spplot"){   # doesn't work yet
+  if (bg == "spplot"){
+
+    stop("spplot does not work yet") # doesn't work yet
 
     ## Download stamen tiles using the bounding box of the SpatialPointsDataFrame object
     #bbPoints <- bbox(caPV)
@@ -226,15 +225,17 @@ occmap <- function(locs, bg='google', projection, pcol='red', alpha = 1, psize=1
     ## get_map
     #bgmap <- get_map(location = map_center, crop = FALSE, ...)
     bblocs <- bbox(locs)
-    bblocs[1, ] <- (bblocs[1, ] - mean(bblocs[1, ])) * 3 + mean(bblocs[1, ])
-    bblocs[2, ] <- (bblocs[2, ] - mean(bblocs[2, ])) * 3 + mean(bblocs[2, ])
+#     bblocs[1, ] <- (bblocs[1, ] - mean(bblocs[1, ])) * 3 + mean(bblocs[1, ])
+#     bblocs[2, ] <- (bblocs[2, ] - mean(bblocs[2, ])) * 3 + mean(bblocs[2, ])
+    bblocs <- (bblocs - rowMeans(bblocs)) * 1.05 + rowMeans(bblocs)
+    # scale longitude and latitude (increase bblocs by 5%)
     # code above taken from R. Lovelace's tutorial
-    bgmap <- get_map(bblocs, crop=FALSE, ...)
+    bgmap <- ggmap::get_map(bblocs, crop=FALSE, ...)
 
     ## plot
     print(ggmap(bgmap) +
-      geom_point(aes(x=lon, y=lat), colour=pcol, size=psize, alpha=1,
-                 data = data.frame(lon=coordinates(locs)[,1], lat=coordinates(locs)[,2])) +
+      geom_point(data = data.frame(lon=coordinates(locs)[,1], lat=coordinates(locs)[,2]),
+                 aes(x=lon, y=lat), colour=pcol, size=psize, alpha=1) +
       xlab("Longitude") + ylab("Latitude"))
 
     } else {
@@ -248,13 +249,29 @@ occmap <- function(locs, bg='google', projection, pcol='red', alpha = 1, psize=1
   }
 
 
+#   if (bg == "leafletR"){
+#
+#     locs.gj <- toGeoJSON(locs)
+#     map <- leaflet(locs.gj, incl.data=TRUE, ...)
+#     browseURL(map)
+#
+#   }
+
+
   if (bg == "leaflet"){
 
-    locs.gj <- toGeoJSON(locs)
-    map <- leaflet(locs.gj, incl.data=TRUE, ...)
-    browseURL(map)
+    bgmap <- leaflet::leaflet(locs) %>%
+      fitBounds(bbox(locs)[1,1], bbox(locs)[2,1], bbox(locs)[1,2], bbox(locs)[2,2]) %>%
+      addTiles() %>%
+      addCircleMarkers(stroke = FALSE, fillColor = pcol, fillOpacity = alpha,
+                       radius = 2*psize, ...)
+    bgmap
 
   }
+
+
+
+
 
 
   if (bg == "mapmisc"){
@@ -263,8 +280,8 @@ occmap <- function(locs, bg='google', projection, pcol='red', alpha = 1, psize=1
     bgmap <- openmap(locs, path = mapmisc_server)
     map.new(locs, legendRight=FALSE)
     if (nlayers(bgmap) > 1) {
-      plotRGB(bgmap, add = TRUE, interpolate = TRUE, ...)
-    } else plot(bgmap, add = TRUE, legend = FALSE, interpolate = TRUE, ...)
+      raster::plotRGB(bgmap, add = TRUE, interpolate = TRUE, ...)
+    } else raster::plot(bgmap, add = TRUE, interpolate = TRUE, ...)
     }
     points(locs, pch = 20, col = pcol, cex = psize)
 
@@ -273,14 +290,14 @@ occmap <- function(locs, bg='google', projection, pcol='red', alpha = 1, psize=1
 
   if (bg == "kml"){
 
-    KML(locs, filename = "locs.kml")
+    raster::KML(locs, filename = "locs.kml")
   }
 
 
   if (class(bg) == "Raster*"){
 
     if (add == FALSE){
-    plot(bg, interpolate = TRUE, ...)
+    raster::plot(bg, interpolate = TRUE, ...)
     }
     points(locs, pch = 20, col = pcol, cex = psize)
   }
@@ -290,76 +307,3 @@ occmap <- function(locs, bg='google', projection, pcol='red', alpha = 1, psize=1
 }
 
 
-leaflet_paco <-
-  function(data, dest, title, size, base.map="osm", center, zoom, style, popup, incl.data=FALSE, overwrite=TRUE, knitr = TRUE) {
-    # prepare data
-    if(missing(data)) data <- NA
-    if(length(data)>1) for(n in 1:length(data)) {
-      if(!is.na(data[[n]])) if(tolower(tail(strsplit(tail(strsplit(data[[n]], "/")[[1]], 1), "[.]")[[1]], 1))!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
-      json <- jsonlite::fromJSON(data[[n]]) # just for testing
-      #the following drops an error, but why?
-      #tryCatch(json <- fromJSON(data[[n]]), error=stop("'data' contains invalid JSON file", call.=FALSE))
-    } else {
-      if(!is.na(data)) {
-        if(tolower(tail(strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]], 1))!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
-        json <- jsonlite::fromJSON(data) # just for testing
-        #the following drops an error, but why?
-        #tryCatch(json <- jsonlite::fromJSON(data), error=stop("'data' is not a valid JSON file", call.=FALSE))
-      }
-    }
-    # prepare output file destination
-    if(missing(dest)) dest <- getwd()
-    dest <- gsub("\\\\", "/", dest)
-    if(missing(title)) {
-      if(any(is.na(data))) title <- "map"
-      else {
-        if(length(data)==1) title <- gsub("_", " ", paste(head(strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]], -1), collapse="_")) else title <- "map"
-      }
-    }
-    # prepare base map
-    basemaps <- getOption("leafletBaseMaps")
-    bm <- names(basemaps)
-    base.map <- bm[pmatch(base.map, bm)]
-    if(any(is.na(base.map))) stop("Invalid base.map")
-    # prepare style
-    if(missing(style)) style <- NA
-    if(any(!is.na(style))) {
-      if(is.list(style) & !is(style, "leafletr.style")) {
-        for(i in 1:length(style)) if(! is(style[[i]], "leafletr.style")) stop("At least one style object not recognized")
-      } else if(! is(style, "leafletr.style")) stop("Style object not recognized")
-    }
-    if(length(data)>1 && !is.na(style)) if(length(style)<length(data) || !is.list(style)) stop("Number of styles must correspond to number of data files")
-    if(file.exists(file.path(dest, gsub(" ", "_", title))) && !overwrite) stop("Abort - file already exists")
-    # prepare popup
-    if(missing(popup)) popup <- NA
-    if(!any(is.na(popup))) {
-      if(is.list(popup)) {
-        for(n in 1:length(popup)) if(length(popup[[n]])==1) if(popup[[n]]=="*") popup[[n]] <- getProperties(data[[n]], FALSE)
-      } else {
-        if(length(popup)==1) if(popup=="*") popup <- getProperties(data[[1]], FALSE)
-      }
-    }
-    if(!is.list(popup)) popup <- list(popup)
-    # prepare map parameter
-    if(missing(size)) size <- NA
-    if(missing(center)) center <- NA
-    if(missing(zoom)) zoom <- NA
-    if(any(is.na(data))) {
-      center <- c(0,0)
-      zoom <- 2
-    }
-    # prepare file path
-    dir.create(file.path(dest, gsub(" ", "_", title)), showWarnings=FALSE)
-    if(any(!is.na(data)) && !incl.data) {
-      for(n in 1:length(data)) file.copy(data[[n]], file.path(dest, gsub(" ", "_", title)), overwrite=overwrite)
-    }
-    filePath <- file.path(dest, gsub(" ", "_", title), paste0(gsub(" ", "_", title), ".html"))
-    # brew
-    if (knitr == TRUE) brew(system.file("templates/main.brew", package="leafletR")) else {
-      brew(system.file("templates/main.brew", package="leafletR"), filePath)
-    # finish
-    class(filePath) <- "leaflet"
-    message("\nYour leaflet map has been saved under ", filePath)
-    invisible(filePath)
-    }
-  }
