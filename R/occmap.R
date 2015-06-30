@@ -145,7 +145,7 @@ occmap <- function(locs, bg='google', projection, pcol='red', alpha = 1, psize=1
     bgmap <- dismo::gmap(locs.GM, lonlat = TRUE, ...)
 
     # Plot
-    if (add==FALSE) plot(bgmap, axes = FALSE)
+    if (add==FALSE) plot(bgmap, axes = FALSE, interpolate = TRUE)
     points(coordinates(locs), pch=20, col=pcol, cex=psize)
   }
 

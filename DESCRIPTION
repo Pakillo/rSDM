@@ -1,7 +1,7 @@
 Package: rSDM
 Type: Package
 Title: Species Distribution Modelling and niche modelling in R
-Version: 0.0.4
+Version: 0.0.5
 Date: 2015-06-30
 Author: F. Rodriguez-Sanchez, unless specified in particular functions.
 Maintainer: F. Rodriguez-Sanchez <f.rodriguez.sanc@gmail.com>

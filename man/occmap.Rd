@@ -42,7 +42,7 @@ raster::plot or raster::plotRGB if bg == 'mapmisc'
 See these functions help files for details.}
 }
 \value{
-A map.
+A map (plot), unless \code{bg = 'KML'} in which case a kmz file is saved.
 }
 \description{
 Plot map of species occurrences on top of different background layers.
