@@ -10,7 +10,7 @@
 #'
 #'
 #' @export
-#' @return A map.
+#' @return A map (plot), unless \code{bg = 'KML'} in which case a kmz file is saved.
 #' @import sp
 #' @import rgdal
 #' @import raster
@@ -290,7 +290,8 @@ occmap <- function(locs, bg='google', projection, pcol='red', alpha = 1, psize=1
 
   if (bg == "kml"){
 
-    raster::KML(locs, filename = "locs.kml")
+    raster::KML(locs, filename = "occmap.kmz", overwrite = TRUE, ...)
+    #rgdal::writeOGR(locs, dsn = "occmap.kml", layer = "locs", driver = "KML")
   }
 
 
