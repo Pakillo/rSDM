@@ -8,8 +8,17 @@ Authors@R: person("Francisco", "Rodriguez-Sanchez",
     email = "f.rodriguez.sanc@gmail.com", role = c("aut", "cre"))
 URL: https://github.com/Pakillo/rSDM
 BugReports: https://github.com/Pakillo/rSDM/issues
-Version: 0.1.1
+Version: 0.1.2
 Date: 2016-04-11
 Depends:
     R (>= 3.2.4)
+Imports:
+    sp,
+    leaflet,
+    raster,
+    ggmap,
+    ggplot2,
+    dismo,
+    mapmisc,
+    scales
 RoxygenNote: 5.0.1
