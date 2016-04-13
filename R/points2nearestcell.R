@@ -44,7 +44,7 @@ points2nearestcell <- function(locs, ras, layer = 1,
     # find the nearest raster cell for each point with missing data
     nearest.cell <- class::knn1(coord.ras, coord.miss, cell.id)
 
-    new.coords <- coord.ras[nearest.cell, ]
+    new.coords <- matrix(coord.ras[nearest.cell, ], ncol = 2)
     colnames(new.coords) <- c("longitude_new", "latitude_new")
 
     if (!is.null(distance)){
@@ -93,7 +93,7 @@ points2nearestcell <- function(locs, ras, layer = 1,
         occmap(new.coords, ras, pcol = "black",
                legend = FALSE,
                main = "Points moved to nearest raster cell",
-               ext = extent(rbind(1.3*coord.miss, 1.3*new.coords)))
+               ext = extent(rbind(coord.miss, new.coords)))
         occmap(coord.miss, pcol = "red", add = TRUE)
         segments(coord.miss[, 1], coord.miss[, 2],
                  new.coords[, 1], new.coords[, 2])
@@ -103,7 +103,7 @@ points2nearestcell <- function(locs, ras, layer = 1,
     }
 
 
-  }
+  } else message("All points fall within a raster cell")
 
 
   return(locs)
