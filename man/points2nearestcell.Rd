@@ -31,7 +31,7 @@ A SpatialPointsDataFrame (with corrected coordinates if move is TRUE).
 Move point occurrences falling in raster cells without data (i.e. NA) to the nearest raster cell with data.
 }
 \examples{
-\\donotrun{
+\dontrun{
 data(acaule)
 locs <- locs2sp(acaule)
 ras <- getData('worldclim', var = 'tmin', res = 10)

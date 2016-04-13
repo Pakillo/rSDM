@@ -13,6 +13,7 @@
 #' @export
 #' @return A map (plot), unless \code{bg = 'KML'} in which case a kmz file is saved to be explored with Google Earth. In some cases, a raster layer, leaflet object, or ggplot object is returned in addition to the map.
 #' @import sp
+#' @import rgdal
 #' @importFrom scales alpha
 #' @param locs A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link{locs2sp}}.
 #' @param proj Character string specifying the projection of coordinates data (see \code{\link[sp]{proj4string}} or \url{http://spatialreference.org}). Default is geographic (unprojected) coordinates, datum WGS84. Not used if locs is already an Spatial object with defined projection.
@@ -30,6 +31,7 @@
 #' @param add Logical. Add these occurrences to a previous map? (e.g. for a new species). Default is FALSE. Note this feature doesn't work for all map types. For leaflet maps, when add = TRUE, a leaflet basemap (e.g. as produced by a previous call to occmap) must be provided (see \code{leaflet.base}).
 #' @param leaflet.base Leaflet map to be used as basemap to add further points when add is TRUE.
 #' @param mapmisc_server character. Server/type of background map to be used when bg = "mapmisc". Run \code{\link[mapmisc]{osmTiles}} to see all the available layers.
+#' @param filename Character. Path and filename of the KMZ file produced when bg = "kml".
 #' @param ... additional parameters to be passed to
 #' dismo::gmap if bg == 'google'
 #' plot if bg == 'coast'
@@ -41,6 +43,7 @@
 #' @examples
 #'
 #' # Using acaule dataset from dismo package:
+#' library(dismo)
 #' data(acaule)
 #' occmap(locs=acaule)
 #' occmap(locs=acaule, bg="google")
@@ -207,7 +210,7 @@ map_gmap <- function(locs, pcol, psize, add, ...){
 
 #' @importFrom raster KML
 
-map_kml <- function(locs, filename){
+map_kml <- function(locs, filename, ...){
   raster::KML(locs, filename = filename, overwrite = TRUE, ...)
 }
 

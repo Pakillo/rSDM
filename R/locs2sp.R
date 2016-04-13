@@ -10,7 +10,7 @@
 #' @import sp
 #'
 #' @examples
-#' locs <- matrix(runif(20, ncol = 2))
+#' locs <- matrix(runif(20), ncol = 2)
 #' locs.sp <- locs2sp(locs)
 #'
 #' locs <- data.frame(species = rep("Laurus nobilis", 10), x = runif(10), y = runif(10))

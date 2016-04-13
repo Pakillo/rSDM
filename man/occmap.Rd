@@ -34,6 +34,8 @@ Alternatively, a Raster object to be used as background.}
 
 \item{mapmisc_server}{character. Server/type of background map to be used when bg = "mapmisc". Run \code{\link[mapmisc]{osmTiles}} to see all the available layers.}
 
+\item{filename}{Character. Path and filename of the KMZ file produced when bg = "kml".}
+
 \item{...}{additional parameters to be passed to
 dismo::gmap if bg == 'google'
 plot if bg == 'coast'
@@ -54,6 +56,7 @@ If using ggmap and stamen maps, large regions seem to give problems.
 \examples{
 
 # Using acaule dataset from dismo package:
+library(dismo)
 data(acaule)
 occmap(locs=acaule)
 occmap(locs=acaule, bg="google")
