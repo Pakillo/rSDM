@@ -17,14 +17,14 @@
 #' @importFrom scales alpha
 #' @param locs A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link{locs2sp}}.
 #' @param proj Character string specifying the projection of coordinates data (see \code{\link[sp]{proj4string}} or \url{http://spatialreference.org}). Default is geographic (unprojected) coordinates, datum WGS84. Not used if locs is already an Spatial object with defined projection.
+#' @param ras Raster* object to be used as background for points. Default is NULL, in which case a background map defined by \code{bg} will be used.
 #' @param bg Type of background map. Either
-#' 'google' for Google maps background (using \code{\link[dismo]{gmap}}),
+#' 'google' for Google maps background (using \code{\link[dismo]{gmap}}) (default),
 #' 'coast' for coastlines (using \code{coastsCoarse} from \pkg{rworldmap} package),
 #' 'ggmap' for any of the maps provided by \code{\link[ggmap]{get_map}} in \pkg{ggmap} package,
 #' 'leaflet' for an interactive HTML map using \pkg{leaflet},
 #' 'mapmisc' for using any of the layers available in \pkg{mapmisc} package, or
 #' 'kml' for producing a KMZ file to be opened with Google Earth.
-#' Alternatively, a Raster object to be used as background.
 #' @param pcol Colour to be used for points. Default is "red".
 #' @param alpha Colour transparency for points, between 0 (fully transparent) and 1 (fully opaque).
 #' @param psize Point size. Default is 1 (cex = 1).
@@ -46,7 +46,6 @@
 #' library(dismo)
 #' data(acaule)
 #' occmap(locs=acaule)
-#' occmap(locs=acaule, bg="google")
 #' occmap(locs=acaule, bg="google", type="satellite")   # using options from dismo:gmap
 #'
 #'
@@ -87,7 +86,7 @@
 
 
 
-occmap <- function(locs, bg = 'google', proj = "+init=epsg:4326",
+occmap <- function(locs, ras = NULL, bg = 'google', proj = "+init=epsg:4326",
                    pcol = 'red', alpha = 1, psize = 1,
                    add = FALSE, leaflet.base,
                    mapmisc_server = "maptoolkit", filename = "occmap.kmz",
@@ -112,63 +111,72 @@ occmap <- function(locs, bg = 'google', proj = "+init=epsg:4326",
   ### PLOTTING ###
 
 
-  ### Google Maps background (using dismo::gmap) ###
+  if (!is.null(ras)){   # if raster provided, use it as background
 
-  if (bg == 'google'){
-    bgmap <- map_gmap(locs, pcol = pcol, psize = psize, add = add, ...)
-  }
-
-
-
-  ### KML ###
-
-  if (bg == "kml")
-    map_kml(locs, filename = filename, ...)
-
-
-  #### Plot localities onto user-provided raster ###
-
-  if (class(bg) == "Raster*")
     map_raster(locs, ras, add = add, pcol = pcol, psize = psize, ...)
 
+  } else {
+
+    if (isTRUE(add)){
+
+      map_raster(locs, ras, add = add, pcol = pcol, psize = psize, ...)
+
+    } else {      # use map as defined by 'bg'
+
+      ### Google Maps background (using dismo::gmap) ###
+
+      if (bg == 'google'){
+        bgmap <- map_gmap(locs, pcol = pcol, psize = psize, add = add, ...)
+      }
 
 
-  ### Coastlines only ###
+      ### KML ###
 
-  if (bg == 'coast')
-    map_coast(locs, add = add, pcol = pcol, psize = psize, ...)
+      if (bg == "kml")
+        map_kml(locs, filename = filename, ...)
+
+
+      ### Coastlines only ###
+
+      if (bg == 'coast')
+        map_coast(locs, add = add, pcol = pcol, psize = psize, ...)
 
 
 
-  ### Leaflet map ###
+      ### Leaflet map ###
 
-  if (bg == "leaflet"){
-    bgmap <- map_leaflet(locs, pcol = pcol, alpha = alpha, psize = psize,
-                add = add, prev.map = leaflet.base, ...)
+      if (bg == "leaflet"){
+        bgmap <- map_leaflet(locs, pcol = pcol, alpha = alpha, psize = psize,
+                             add = add, prev.map = leaflet.base, ...)
+      }
+
+
+
+      ### ggmap ###
+
+      if (bg == "ggmap"){
+        bgmap <- map_ggmap(locs, add = add, pcol = pcol, psize = psize, ...)
+      }
+
+
+
+
+      ##### Using Oscar Perpinan's approach (spplot) #####
+
+      if (bg == "spplot")
+        map_spplot(locs)
+
+
+      ### using mapmisc ###
+
+      if (bg == "mapmisc"){
+        bgmap <- map_mapmisc(locs, add = add, pcol = pcol, psize = psize, ...)
+      }
+
+    }
+
   }
 
-
-
-  ### ggmap ###
-
-  if (bg == "ggmap"){
-    bgmap <- map_ggmap(locs, add = add, pcol = pcol, psize = psize, ...)
-  }
-
-
-
-
-  ##### Using Oscar Perpinan's approach (spplot) #####
-
-  if (bg == "spplot")
-    map_spplot(locs)
-
-
-  ### using mapmisc ###
-
-  if (bg == "mapmisc"){
-    bgmap <- map_mapmisc(locs, add = add, pcol = pcol, psize = psize, ...)
-  }
 
   if (exists("bgmap")) return(bgmap)
 

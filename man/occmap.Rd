@@ -4,21 +4,22 @@
 \alias{occmap}
 \title{Map species occurrences}
 \usage{
-occmap(locs, bg = "google", proj = "+init=epsg:4326", pcol = "red",
-  alpha = 1, psize = 1, add = FALSE, leaflet.base,
+occmap(locs, ras = NULL, bg = "google", proj = "+init=epsg:4326",
+  pcol = "red", alpha = 1, psize = 1, add = FALSE, leaflet.base,
   mapmisc_server = "maptoolkit", filename = "occmap.kmz", ...)
 }
 \arguments{
 \item{locs}{A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link{locs2sp}}.}
 
+\item{ras}{Raster* object to be used as background for points. Default is NULL, in which case a background map defined by \code{bg} will be used.}
+
 \item{bg}{Type of background map. Either
-'google' for Google maps background (using \code{\link[dismo]{gmap}}),
+'google' for Google maps background (using \code{\link[dismo]{gmap}}) (default),
 'coast' for coastlines (using \code{coastsCoarse} from \pkg{rworldmap} package),
 'ggmap' for any of the maps provided by \code{\link[ggmap]{get_map}} in \pkg{ggmap} package,
 'leaflet' for an interactive HTML map using \pkg{leaflet},
 'mapmisc' for using any of the layers available in \pkg{mapmisc} package, or
-'kml' for producing a KMZ file to be opened with Google Earth.
-Alternatively, a Raster object to be used as background.}
+'kml' for producing a KMZ file to be opened with Google Earth.}
 
 \item{proj}{Character string specifying the projection of coordinates data (see \code{\link[sp]{proj4string}} or \url{http://spatialreference.org}). Default is geographic (unprojected) coordinates, datum WGS84. Not used if locs is already an Spatial object with defined projection.}
 
@@ -59,7 +60,6 @@ If using ggmap and stamen maps, large regions seem to give problems.
 library(dismo)
 data(acaule)
 occmap(locs=acaule)
-occmap(locs=acaule, bg="google")
 occmap(locs=acaule, bg="google", type="satellite")   # using options from dismo:gmap
 
 
