@@ -27,7 +27,8 @@
 #' @param pcol Colour to be used for points. Default is "red".
 #' @param alpha Colour transparency for points, between 0 (fully transparent) and 1 (fully opaque).
 #' @param psize Point size. Default is 1 (cex = 1).
-#' @param add Logical. Add these occurrences to a previous map? (e.g. for a new species). Default is FALSE. Note this feature doesn't work for all map types.
+#' @param add Logical. Add these occurrences to a previous map? (e.g. for a new species). Default is FALSE. Note this feature doesn't work for all map types. For leaflet maps, when add = TRUE, a leaflet basemap (e.g. as produced by a previous call to occmap) must be provided (see \code{leaflet.base}).
+#' @param leaflet.base Leaflet map to be used as basemap to add further points when add is TRUE.
 #' @param mapmisc_server character. Server/type of background map to be used when bg = "mapmisc". Run \code{\link[mapmisc]{osmTiles}} to see all the available layers.
 #' @param ... additional parameters to be passed to
 #' dismo::gmap if bg == 'google'
@@ -85,7 +86,8 @@
 
 occmap <- function(locs, bg = 'google', proj = "+init=epsg:4326",
                    pcol = 'red', alpha = 1, psize = 1,
-                   add=FALSE, mapmisc_server = "maptoolkit", filename = "occmap.kmz",
+                   add = FALSE, leaflet.base,
+                   mapmisc_server = "maptoolkit", filename = "occmap.kmz",
                    ...){
 
 
@@ -109,8 +111,10 @@ occmap <- function(locs, bg = 'google', proj = "+init=epsg:4326",
 
   ### Google Maps background (using dismo::gmap) ###
 
-  if (bg == 'google')
-    map_gmap(locs, pcol = pcol, psize = psize, add = add, ...)
+  if (bg == 'google'){
+    bgmap <- map_gmap(locs, pcol = pcol, psize = psize, add = add, ...)
+  }
+
 
 
   ### KML ###
@@ -128,21 +132,26 @@ occmap <- function(locs, bg = 'google', proj = "+init=epsg:4326",
 
   ### Coastlines only ###
 
-  if (bg=='coast')
+  if (bg == 'coast')
     map_coast(locs, add = add, pcol = pcol, psize = psize, ...)
 
 
 
   ### Leaflet map ###
 
-  if (bg == "leaflet")
-    map_leaflet(locs, pcol = pcol, alpha = alpha, psize = psize, ...)
+  if (bg == "leaflet"){
+    bgmap <- map_leaflet(locs, pcol = pcol, alpha = alpha, psize = psize,
+                add = add, prev.map = leaflet.base, ...)
+  }
+
 
 
   ### ggmap ###
 
-  if (bg == "ggmap")
-    map_ggmap(locs, add = add, pcol = pcol, psize = psize, ...)
+  if (bg == "ggmap"){
+    bgmap <- map_ggmap(locs, add = add, pcol = pcol, psize = psize, ...)
+  }
+
 
 
 
@@ -154,9 +163,11 @@ occmap <- function(locs, bg = 'google', proj = "+init=epsg:4326",
 
   ### using mapmisc ###
 
-  if (bg == "mapmisc")
-    map_mapmisc(locs, add = add, pcol = pcol, psize = psize, ...)
+  if (bg == "mapmisc"){
+    bgmap <- map_mapmisc(locs, add = add, pcol = pcol, psize = psize, ...)
+  }
 
+  if (exists("bgmap")) return(bgmap)
 
 }
 
@@ -234,15 +245,27 @@ map_coast <- function(locs, add, pcol, psize, ...){
 
 #' @import leaflet
 
-map_leaflet <- function(locs, pcol, alpha, psize, ...){
+map_leaflet <- function(locs, pcol, alpha, psize, add, prev.map, ...){
+
+  if (add == FALSE){
 
   bgmap <- leaflet(locs) %>%
     fitBounds(bbox(locs)[1,1], bbox(locs)[2,1], bbox(locs)[1,2], bbox(locs)[2,2]) %>%
     addTiles() %>%
     addCircleMarkers(stroke = FALSE, fillColor = pcol, fillOpacity = alpha,
                      radius = 3*psize, ...)
-  return(bgmap)
 
+
+  } else {
+    bgmap <- prev.map %>%
+      addCircleMarkers(data = locs,
+                       stroke = FALSE, fillColor = pcol, fillOpacity = alpha,
+                       radius = 3*psize, ...)
+
+  }
+
+  bgmap
+  return(bgmap)
 }
 
 
@@ -262,24 +285,22 @@ map_ggmap <- function(locs, add, pcol, psize, ...){
     bgmap <- ggmap::get_map(bblocs, crop = FALSE, ...)
 
     ## plot
-    map <- ggmap(bgmap) +
+    bgmap <- ggmap(bgmap) +
             geom_point(data = data.frame(lon=coordinates(locs)[,1], lat=coordinates(locs)[,2]),
                        aes(x=lon, y=lat), colour=pcol, size=psize, alpha=1) +
             xlab("Longitude") + ylab("Latitude")
-    print(map)
-    return(map)
+
 
   } else {
 
-    bgmap <- last_plot()
-    map <- bgmap +
+    bgmap <- last_plot() +
       geom_point(aes(x=lon, y=lat), colour=pcol, size=psize, alpha=1,
                  data = data.frame(lon=coordinates(locs)[,1], lat=coordinates(locs)[,2]))
-    print(map)
-    return(map)
+
   }
 
-
+  print(bgmap)
+  return(bgmap)
 
 }
 

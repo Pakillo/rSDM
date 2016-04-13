@@ -5,8 +5,8 @@
 \title{Map species occurrences}
 \usage{
 occmap(locs, bg = "google", proj = "+init=epsg:4326", pcol = "red",
-  alpha = 1, psize = 1, add = FALSE, mapmisc_server = "maptoolkit",
-  filename = "occmap.kmz", ...)
+  alpha = 1, psize = 1, add = FALSE, leaflet.base,
+  mapmisc_server = "maptoolkit", filename = "occmap.kmz", ...)
 }
 \arguments{
 \item{locs}{A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link{locs2sp}}.}
@@ -28,7 +28,9 @@ Alternatively, a Raster object to be used as background.}
 
 \item{psize}{Point size. Default is 1 (cex = 1).}
 
-\item{add}{Logical. Add these occurrences to a previous map? (e.g. for a new species). Default is FALSE. Note this feature doesn't work for all map types.}
+\item{add}{Logical. Add these occurrences to a previous map? (e.g. for a new species). Default is FALSE. Note this feature doesn't work for all map types. For leaflet maps, when add = TRUE, a leaflet basemap (e.g. as produced by a previous call to occmap) must be provided (see \code{leaflet.base}).}
+
+\item{leaflet.base}{Leaflet map to be used as basemap to add further points when add is TRUE.}
 
 \item{mapmisc_server}{character. Server/type of background map to be used when bg = "mapmisc". Run \code{\link[mapmisc]{osmTiles}} to see all the available layers.}
 
