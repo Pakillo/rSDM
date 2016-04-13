@@ -13,7 +13,7 @@
 #' @param distance Numeric (optional). Maximum distance to move points. Point coordinates are only changed if the distance to the nearest raster cell is below \code{distance}.
 #' @param showchanges Logical. Print table with old and new coordinates.
 #' @param showmap Logical. Show map with original and new coordinates?
-#' @param leaflet Logical. If TRUE, show leaflet map.
+#' @param leaflet Logical. If TRUE, show leaflet map instead of static map.
 #' @return A SpatialPointsDataFrame (with corrected coordinates if move is TRUE).
 #' @seealso \url{https://github.com/SEEG-Oxford/seegSDM/blob/master/man/nearestLand.Rd} and
 #' \url{http://stackoverflow.com/questions/26652629/extracting-a-value-from-a-raster-for-a-specific-point-based-on-the-closest-cell/26688361#26688361}.
@@ -66,7 +66,16 @@ points2nearestcell <- function(locs, ras, layer = 1,
 
 
     if (showchanges) {
-      print(cbind(coord.miss, new.coords))
+
+      coords <- data.frame(coord.miss, new.coords)
+      distances <- round(pointDistance(coord.miss, new.coords,
+                                 lonlat = compareCRS(locs, "+init=epsg:4326")))
+      moved <- apply(coords, 1, function(x){
+        !isTRUE(identical(x[1], x[3]) & identical(x[2], x[4]))
+      })
+      coords <- cbind(coords, distances, moved)
+      print(coords)
+      message(sum(moved), " out of ", nrow(coords), " points have been moved.")
     }
 
 
@@ -81,11 +90,11 @@ points2nearestcell <- function(locs, ras, layer = 1,
 
       } else {
 
-        plot(ras, legend = FALSE,
-             main = "Points moved to nearest raster cell",
-             ext = extent(rbind(1.1*coord.miss, 1.1*new.coords)))
-        points(new.coords, pch = 16, col = "black")
-        points(coord.miss, pch = 16, col = "red")
+        occmap(new.coords, ras, pcol = "black",
+               legend = FALSE,
+               main = "Points moved to nearest raster cell",
+               ext = extent(rbind(1.3*coord.miss, 1.3*new.coords)))
+        occmap(coord.miss, pcol = "red", add = TRUE)
         segments(coord.miss[, 1], coord.miss[, 2],
                  new.coords[, 1], new.coords[, 2])
 

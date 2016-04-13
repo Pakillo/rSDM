@@ -22,7 +22,7 @@ points2nearestcell(locs, ras, layer = 1, move = TRUE, distance = NULL,
 
 \item{showmap}{Logical. Show map with original and new coordinates?}
 
-\item{leaflet}{Logical. If TRUE, show leaflet map.}
+\item{leaflet}{Logical. If TRUE, show leaflet map instead of static map.}
 }
 \value{
 A SpatialPointsDataFrame (with corrected coordinates if move is TRUE).
