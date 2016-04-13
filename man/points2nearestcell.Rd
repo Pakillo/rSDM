@@ -5,7 +5,7 @@
 \title{Move occurrences to the nearest raster cell with data}
 \usage{
 points2nearestcell(locs, ras, layer = 1, move = TRUE, distance = NULL,
-  showchanges = TRUE, showmap = TRUE, leaflet = TRUE)
+  showchanges = TRUE, showmap = TRUE, leaflet = FALSE)
 }
 \arguments{
 \item{locs}{A SpatialPoints or SpatialPointsDataFrame.}

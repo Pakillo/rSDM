@@ -264,7 +264,7 @@ map_leaflet <- function(locs, pcol, alpha, psize, add, prev.map, ...){
 
   }
 
-  bgmap
+  print(bgmap)
   return(bgmap)
 }
 

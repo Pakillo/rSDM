@@ -27,7 +27,7 @@
 
 points2nearestcell <- function(locs, ras, layer = 1,
                                move = TRUE, distance = NULL,
-                               showchanges = TRUE, showmap = TRUE, leaflet = TRUE) {
+                               showchanges = TRUE, showmap = TRUE, leaflet = FALSE) {
 
   miss <- point_in_cell(locs, ras, layer)
 
@@ -77,7 +77,7 @@ points2nearestcell <- function(locs, ras, layer = 1,
         map <- occmap(new.coords, proj = proj4string(locs), bg = "leaflet", pcol = "black")
         map <- occmap(coord.miss, proj = proj4string(locs), bg = "leaflet",
                       add = TRUE, leaflet.base = map, pcol = "red")
-        map
+        print(map)
 
       } else {
 
