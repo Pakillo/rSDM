@@ -206,7 +206,7 @@ map_gmap <- function(locs, pcol, psize, add, ...){
   # Plot
   if (add==FALSE) raster::plot(bgmap, axes = FALSE, interpolate = TRUE)
   points(coordinates(locs), pch=20, col=pcol, cex=psize)
-  return(bgmap)
+  invisible(bgmap)
 
 }
 
@@ -276,7 +276,7 @@ map_leaflet <- function(locs, pcol, alpha, psize, add, prev.map, ...){
   }
 
   print(bgmap)
-  return(bgmap)
+  invisible(bgmap)
 }
 
 
@@ -311,7 +311,7 @@ map_ggmap <- function(locs, add, pcol, psize, ...){
   }
 
   print(bgmap)
-  return(bgmap)
+  invisible(bgmap)
 
 }
 
@@ -383,7 +383,7 @@ map_mapmisc <- function(locs, add, pcol, psize, ...){
 
   points(locs, pch = 20, col = pcol, cex = psize)
 
-  return(bgmap)
+  invisible(bgmap)
 
 }
 
