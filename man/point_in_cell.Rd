@@ -19,4 +19,3 @@ A logical vector.
 \description{
 This function examines which points fall within a raster cell with data (not NA). Returns TRUE for points falling in a raster cell with data, and FALSE otherwise.
 }
-

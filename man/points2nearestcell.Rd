@@ -42,4 +42,3 @@ check.coords <- points2nearestcell(locs, ras)
 \url{https://github.com/SEEG-Oxford/seegSDM/blob/master/man/nearestLand.Rd} and
 \url{http://stackoverflow.com/questions/26652629/extracting-a-value-from-a-raster-for-a-specific-point-based-on-the-closest-cell/26688361#26688361}.
 }
-

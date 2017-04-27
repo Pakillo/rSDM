@@ -29,4 +29,3 @@ locs.sp <- locs2sp(locs)
 locs <- data.frame(species = rep("Laurus nobilis", 10), x = runif(10), y = runif(10))
 locs.sp <- locs2sp(locs)
 }
-

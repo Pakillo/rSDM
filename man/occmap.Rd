@@ -98,4 +98,3 @@ data(meuse)
 coordinates(meuse) <- ~x+y
 occmap(meuse, proj = "+init=epsg:28992")
 }
-

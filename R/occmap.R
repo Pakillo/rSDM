@@ -178,7 +178,7 @@ occmap <- function(locs, ras = NULL, bg = 'google', proj = "+init=epsg:4326",
   }
 
 
-  if (exists("bgmap")) return(bgmap)
+  if (exists("bgmap")) invisible(bgmap)
 
 }
 

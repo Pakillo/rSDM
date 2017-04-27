@@ -10,4 +10,3 @@ rSDM: functions for SDM and niche modelling in R
 F. Rodriguez-Sanchez
 }
 \keyword{package}
-
