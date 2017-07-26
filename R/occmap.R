@@ -204,7 +204,7 @@ map_gmap <- function(locs, pcol, psize, add, ...){
   bgmap <- dismo::gmap(locs.GM, lonlat = TRUE, ...)
 
   # Plot
-  if (add==FALSE) raster::plot(bgmap, axes = FALSE, interpolate = TRUE)
+  if (add == FALSE) plot_gmap(bgmap, interpolate = TRUE)
   points(coordinates(locs), pch=20, col=pcol, cex=psize)
   invisible(bgmap)
 

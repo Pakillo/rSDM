@@ -2,6 +2,7 @@
 
 export(locs2sp)
 export(occmap)
+export(plot_gmap)
 export(point_in_cell)
 export(points2nearestcell)
 import(ggmap)

@@ -2,14 +2,13 @@ Package: rSDM
 Type: Package
 Title: Species distribution and niche modelling in R
 Description: Functions for niche modelling and SDM.
+Version: 0.3.6
 License: GPL-3
 LazyData: true
 Authors@R: person("Francisco", "Rodriguez-Sanchez",
     email = "f.rodriguez.sanc@gmail.com", role = c("aut", "cre"))
 URL: https://github.com/Pakillo/rSDM
 BugReports: https://github.com/Pakillo/rSDM/issues
-Version: 0.3.5
-Date: 2017-04-27
 Depends:
     R (>= 3.2.4)
 Imports:
