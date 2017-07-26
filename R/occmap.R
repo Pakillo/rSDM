@@ -230,8 +230,13 @@ map_kml <- function(locs, filename, ...){
 
 map_raster <- function(locs, ras, add, pcol, psize, ...){
 
-  if (add == FALSE){
-    raster::plot(ras, interpolate = TRUE, ...)
+  if (add == FALSE) {
+    if (length(ras@legend@colortable) > 0) {
+      plot_gmap(ras, interpolate = TRUE, ...)
+    } else {
+      raster::plot(ras, interpolate = TRUE, ...)
+    }
+
   }
   points(locs, pch = 20, col = pcol, cex = psize)
 
