@@ -31,7 +31,7 @@ locs2sp <- function(locs, proj = "+init=epsg:4326", lon.col = NULL, lat.col = NU
 
   if (ncol(locs) > 1){
     locs <- guess_latlon(locs, lat = lat.col, lon = lon.col)    # guess columns with coordinate data
-    locs <- locs[complete.cases(locs$longitude, locs$latitude), ]  # omit cases without coordinates
+    locs <- locs[!is.na(locs$longitude) & !is.na(locs$latitude), ]  # omit cases without coordinates
     coordinates(locs) <- c("longitude", "latitude")
     proj4string(locs) <- sp::CRS(proj)   # define projection
     return(locs)
