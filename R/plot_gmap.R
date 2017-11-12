@@ -22,9 +22,11 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(dismo)
 #' g <- gmap("France")
 #' plot_gmap(g)
+#' }
 plot_gmap <- function(x, maxpixels=500000, ext=NULL, interpolate=FALSE, axes, main, xlab='', ylab='', asp, add=FALSE, addfun=NULL, zlim=NULL, zlimcol=NULL, ...) {
   # plotting with a color table
 
