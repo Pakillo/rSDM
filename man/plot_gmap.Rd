@@ -44,7 +44,9 @@ A plot.
 This function is very slightly modified from \code{.plotCT} function in \code{raster} package to avoid producing an empty plot before the actual Google image.
 }
 \examples{
+\dontrun{
 library(dismo)
 g <- gmap("France")
 plot_gmap(g)
+}
 }
