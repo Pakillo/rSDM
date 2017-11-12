@@ -6,6 +6,7 @@
 #' @import raster
 #' @import sp
 #' @importFrom class knn1
+#' @importFrom graphics segments
 #' @param locs A SpatialPoints or SpatialPointsDataFrame.
 #' @param ras \code{Raster*} object.
 #' @param layer Integer. For RasterStack and RasterBrick objects, layer to use.

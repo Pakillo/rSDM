@@ -227,6 +227,7 @@ map_kml <- function(locs, filename, ...){
 #### Map onto user-provided raster ####
 
 #' @importFrom raster plot
+#' @importFrom graphics points
 
 map_raster <- function(locs, ras, add, pcol, psize, ...){
 
