@@ -103,7 +103,7 @@ occmap <- function(locs, ras = NULL, bg = 'google', proj = "+init=epsg:4326",
   ## Project to geographical for mapping
   locs <- spTransform(locs, CRS("+init=epsg:4326"))
 
-  if (alpha < 1) pcol = scales::alpha(pcol, alpha)  # transparency
+  if (alpha < 1) pcol <- scales::alpha(pcol, alpha)  # transparency
 
 
 

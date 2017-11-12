@@ -34,13 +34,13 @@ points2nearestcell <- function(locs, ras, layer = 1,
 
   ## if there are NA cells...
 
-  if (sum(miss) > 0){
+  if (sum(miss) > 0) {
 
     coord.miss <- coordinates(locs[miss, ])  # points without data
     if (nlayers(ras) > 1) ras <- raster(ras, layer)
     cells.notNA <- rasterToPoints(ras, spatial = TRUE)  # get coordinates of cells with data
     coord.ras <- coordinates(cells.notNA)
-    cell.id <- factor(1:nrow(coord.ras))
+    cell.id <- factor(seq_len(coord.ras))
 
     # find the nearest raster cell for each point with missing data
     nearest.cell <- class::knn1(coord.ras, coord.miss, cell.id)

@@ -79,10 +79,10 @@ plot_gmap <- function(x, maxpixels=500000, ext=NULL, interpolate=FALSE, axes, ma
   z <- z + 1
   z[is.na(z)] <- 1
   if (! is.null(coltab) ) {
-    z <- matrix(coltab[z], nrow=nrow(x), ncol=ncol(x), byrow=T)
+    z <- matrix(coltab[z], nrow=nrow(x), ncol=ncol(x), byrow=TRUE)
     z <- as.raster(z)
   } else {
-    z <- matrix(z, nrow=nrow(x), ncol=ncol(x), byrow=T)
+    z <- matrix(z, nrow=nrow(x), ncol=ncol(x), byrow=TRUE)
     z <- as.raster(z, max=max(z)) #, na.rm=TRUE))
   }
 
