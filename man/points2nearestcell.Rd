@@ -4,8 +4,16 @@
 \alias{points2nearestcell}
 \title{Move occurrences to the nearest raster cell with data}
 \usage{
-points2nearestcell(locs, ras, layer = 1, move = TRUE, distance = NULL,
-  showchanges = TRUE, showmap = TRUE, leaflet = FALSE)
+points2nearestcell(
+  locs = NULL,
+  ras = NULL,
+  layer = 1,
+  move = TRUE,
+  distance = NULL,
+  showchanges = TRUE,
+  showmap = TRUE,
+  leaflet = FALSE
+)
 }
 \arguments{
 \item{locs}{A SpatialPoints or SpatialPointsDataFrame.}
@@ -39,6 +47,5 @@ check.coords <- points2nearestcell(locs, ras)
 }
 }
 \seealso{
-\url{https://github.com/SEEG-Oxford/seegSDM/blob/master/man/nearestLand.Rd} and
-\url{http://stackoverflow.com/questions/26652629/extracting-a-value-from-a-raster-for-a-specific-point-based-on-the-closest-cell/26688361#26688361}.
+\url{https://github.com/SEEG-Oxford/seegSDM/blob/master/man/nearestLand.Rd} and \url{https://stackoverflow.com/questions/27562076/if-raster-value-na-search-and-extract-the-nearest-non-na-pixel} and \url{http://stackoverflow.com/questions/26652629/extracting-a-value-from-a-raster-for-a-specific-point-based-on-the-closest-cell/26688361#26688361} and \url{https://rdrr.io/cran/spatstat/man/nearest.raster.point.html}.
 }
