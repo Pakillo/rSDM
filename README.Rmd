@@ -1,7 +1,6 @@
 ---
 title: "rSDM: Species distribution and niche modelling in R"
 author: "Francisco Rodriguez-Sanchez"
-date: "`r Sys.Date()`"
 output: 
   github_document:
     toc: no
