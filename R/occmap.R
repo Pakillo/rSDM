@@ -88,13 +88,13 @@
 
 occmap <- function(locs, ras = NULL, bg = 'google', proj = "+init=epsg:4326",
                    pcol = 'red', alpha = 1, psize = 1,
-                   add = FALSE, leaflet.base,
+                   add = FALSE, leaflet.base = NULL,
                    mapmisc_server = "maptoolkit", filename = "occmap.kmz",
                    ...){
 
 
   # Create Spatial object
-  if (!class(locs) %in% c("SpatialPoints", "SpatialPointsDataFrame")) {
+  if (!inherits(locs, c("SpatialPoints", "SpatialPointsDataFrame"))) {
     locs <- locs2sp(locs, proj = proj)
   }
 
@@ -117,11 +117,11 @@ occmap <- function(locs, ras = NULL, bg = 'google', proj = "+init=epsg:4326",
 
   } else {
 
-    if (isTRUE(add)){
-
-      map_raster(locs, ras, add = add, pcol = pcol, psize = psize, ...)
-
-    } else {      # use map as defined by 'bg'
+    # if (isTRUE(add)){
+    #
+    #   map_raster(locs, ras, add = add, pcol = pcol, psize = psize, ...)
+    #
+    # } else {      # use map as defined by 'bg'
 
       ### Google Maps background (using dismo::gmap) ###
 
@@ -174,8 +174,6 @@ occmap <- function(locs, ras = NULL, bg = 'google', proj = "+init=epsg:4326",
       }
 
     }
-
-  }
 
 
   if (exists("bgmap")) invisible(bgmap)
