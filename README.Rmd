@@ -1,9 +1,7 @@
 ---
 title: "rSDM: Species distribution and niche modelling in R"
 author: "Francisco Rodriguez-Sanchez"
-output: 
-  github_document:
-    toc: no
+output: github_document
 ---
 
 [![Travis-CI Build Status](https://travis-ci.org/Pakillo/rSDM.svg?branch=master)](https://travis-ci.org/Pakillo/rSDM)

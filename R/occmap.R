@@ -19,9 +19,9 @@
 #' @param proj Character string specifying the projection of coordinates data (see \code{\link[sp]{proj4string}} or \url{http://spatialreference.org}). Default is geographic (unprojected) coordinates, datum WGS84. Not used if locs is already an Spatial object with defined projection.
 #' @param ras Raster* object to be used as background for points. Default is NULL, in which case a background map defined by \code{bg} will be used.
 #' @param bg Type of background map. Either
-#' 'google' for Google maps background (using \code{\link[dismo]{gmap}}) (default),
+#' 'google' for Google maps background (using \code{\link[dismo]{gmap}}) (note this requires a Google API key - currently not working!),
 #' 'coast' for coastlines (using \code{coastsCoarse} from \pkg{rworldmap} package),
-#' 'ggmap' for any of the maps provided by \code{\link[ggmap]{get_map}} in \pkg{ggmap} package,
+#' 'ggmap' for maps provided by \code{\link[ggmap]{get_map}} in \pkg{ggmap} package,
 #' 'leaflet' for an interactive HTML map using \pkg{leaflet},
 #' 'mapmisc' for using any of the layers available in \pkg{mapmisc} package, or
 #' 'kml' for producing a KMZ file to be opened with Google Earth.
@@ -41,37 +41,30 @@
 #' See these functions help files for details.
 #' @details If using ggmap and stamen maps, large regions seem to give problems.
 #' @examples
-#'
+#' \dontrun{
 #' # Using acaule dataset from dismo package:
 #' library(dismo)
 #' data(acaule)
-#' occmap(locs=acaule)
-#' occmap(locs=acaule, bg="google", type="satellite")   # using options from dismo:gmap
 #'
+#' occmap(locs = acaule)  # If 'ras' not provided, default is bg = "ggmap"
+#' occmap(acaule, bg = "coast")  # just coastlines as background map
+#' occmap(acaule, bg = "leaflet") # leaflet interactive map
 #'
 #' # Watercolor map from Stamen using ggmap
 #' # NB: use small regions, otherwise give error to download map tiles
-#' locs_redux <- subset(acaule, lon>-80 & lon< -60 & lat>-30 & lat< -10)
-#' occmap(locs=locs_redux,
-#'            bg="ggmap", maptype='watercolor', source='stamen',
-#'            pcol="darkgreen", psize=4)
-#'
+#' locs_redux <- subset(acaule, lon > -80 & lon < -60 & lat > -30 & lat < -10)
+#' occmap(locs = locs_redux, maptype = 'watercolor', source = 'stamen',
+#'            pcol = "darkgreen", psize = 4)
 #'
 #' # Plot occurrences in a specific country:
-#' occmap(locs=subset(acaule, country=="Bolivia"))
-#'
-#' # Plot occurrences within given coordinates
-#' occmap(locs=subset(acaule, lon>-80 & lon< -60 & lat>-30 & lat< -10))
-#' # can use click() aftewards to identify specific points
+#' occmap(locs = subset(acaule, country=="Bolivia"), bg = "leaflet")
+#' # (note there are georeferencing errors in the data)
 #'
 #'
 #' # Add transparency to points
-#' occmap(locs=acaule, pcol="red", alpha=0.7)
+#' occmap(locs = acaule, pcol = "red", alpha = 0.5, bg = "coast")
+#' occmap(locs = acaule, pcol = "red", alpha = 0.5, bg = "leaflet")
 #'
-#' # Save plot directly to file
-#' pdf("map.pdf", paper="a4r")
-#' occmap(locs=acaule, type="satellite", scale=2)
-#' dev.off()
 #'
 #' ## Providing spatial objects ##
 #' data(meuse)
@@ -83,10 +76,11 @@
 #' data(meuse)
 #' coordinates(meuse) <- ~x+y
 #' occmap(meuse, proj = "+init=epsg:28992")
+#' }
 
 
 
-occmap <- function(locs, ras = NULL, bg = 'google', proj = "+init=epsg:4326",
+occmap <- function(locs, ras = NULL, bg = 'ggmap', proj = "+init=epsg:4326",
                    pcol = 'red', alpha = 1, psize = 1,
                    add = FALSE, leaflet.base = NULL,
                    mapmisc_server = "maptoolkit", filename = "occmap.kmz",
