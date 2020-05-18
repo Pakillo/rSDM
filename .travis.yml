@@ -1,10 +1,15 @@
-# Sample .travis.yml for R projects
 
 language: r
-warnings_are_errors: true
+warnings_are_errors: false
 sudo: required
 
 dist: trusty
 
-before_install:
-  - sudo apt-get install --yes libproj-dev libgdal-dev
+cache: packages
+
+apt_packages:
+  - gdal-bin
+  - libproj-dev
+  - libgdal-dev
+  - libudunits2-dev
+
