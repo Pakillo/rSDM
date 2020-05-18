@@ -8,8 +8,6 @@
 #'
 #' @return A logical vector.
 #' @export
-#' @importFrom sp proj4string CRS
-#' @importFrom raster compareCRS nlayers raster extract
 #'
 point_in_cell <- function(locs, ras, layer = 1){
 
@@ -20,7 +18,7 @@ point_in_cell <- function(locs, ras, layer = 1){
 
     if (nlayers(ras) > 1) ras <- raster(ras, layer)
     ## Get NA cells
-    rasvals <- extract(ras, locs)
+    rasvals <- raster::extract(ras, locs)
     missing <- is.na(rasvals)
     missing
 

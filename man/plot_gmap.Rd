@@ -4,9 +4,22 @@
 \alias{plot_gmap}
 \title{Plot Google Earth images obtained through dismo::gmap}
 \usage{
-plot_gmap(x, maxpixels = 5e+05, ext = NULL, interpolate = FALSE, axes,
-  main, xlab = "", ylab = "", asp, add = FALSE, addfun = NULL,
-  zlim = NULL, zlimcol = NULL, ...)
+plot_gmap(
+  x,
+  maxpixels = 5e+05,
+  ext = NULL,
+  interpolate = FALSE,
+  axes,
+  main,
+  xlab = "",
+  ylab = "",
+  asp,
+  add = FALSE,
+  addfun = NULL,
+  zlim = NULL,
+  zlimcol = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{RasterLayer, as obtained through \code{\link[dismo]{gmap}}.}

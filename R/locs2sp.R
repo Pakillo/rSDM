@@ -17,7 +17,7 @@
 #' locs.sp <- locs2sp(locs)
 locs2sp <- function(locs, proj = "+init=epsg:4326", lon.col = NULL, lat.col = NULL){
 
-  if (! class(locs) %in% c("matrix", "data.frame")) stop("locs must be a matrix or dataframe")
+  if (! inherits(locs, c("matrix", "data.frame"))) stop("locs must be a matrix or dataframe")
 
   if (is.matrix(locs)){
     message("As locs is a matrix, assuming first two columns are longitude and latitude, respectively.")

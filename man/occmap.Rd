@@ -4,9 +4,20 @@
 \alias{occmap}
 \title{Map species occurrences}
 \usage{
-occmap(locs, ras = NULL, bg = "google", proj = "+init=epsg:4326",
-  pcol = "red", alpha = 1, psize = 1, add = FALSE, leaflet.base,
-  mapmisc_server = "maptoolkit", filename = "occmap.kmz", ...)
+occmap(
+  locs,
+  ras = NULL,
+  bg = "google",
+  proj = "+init=epsg:4326",
+  pcol = "red",
+  alpha = 1,
+  psize = 1,
+  add = FALSE,
+  leaflet.base = NULL,
+  mapmisc_server = "maptoolkit",
+  filename = "occmap.kmz",
+  ...
+)
 }
 \arguments{
 \item{locs}{A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link{locs2sp}}.}

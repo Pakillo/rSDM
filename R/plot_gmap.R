@@ -19,7 +19,6 @@
 #' @param ... Graphical parameters. Any argument that can be passed to \code{\link[graphics]{rasterImage}}.
 #'
 #' @return A plot.
-#' @export
 #'
 #' @examples
 #' \dontrun{
