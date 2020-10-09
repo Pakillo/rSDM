@@ -21,6 +21,8 @@ Imports:
     dismo,
     mapmisc,
     scales,
-    class
+    class,
+    rgis
 RoxygenNote: 7.1.0
 Encoding: UTF-8
+Remotes: Pakillo/rgis
