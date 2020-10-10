@@ -93,7 +93,7 @@ points2nearestcell <- function(locs = NULL, ras = NULL, layer = 1,
         occmap(new.coords, ras, pcol = "black",
                legend = FALSE,
                main = "Points moved to nearest raster cell",
-               ext = raster::extent(rbind(coord.miss, new.coords)))
+               ext = raster::extent(rbind(coord.miss, new.coords))*1.1)
         occmap(coord.miss, pcol = "red", add = TRUE, ras = ras)
         segments(coord.miss[, 1], coord.miss[, 2],
                  new.coords[, 1], new.coords[, 2])
