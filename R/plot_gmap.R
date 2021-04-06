@@ -1,10 +1,10 @@
 
 #' Plot Google Earth images obtained through dismo::gmap
 #'
-#' This function is very slightly modified from \code{.plotCT} function in \code{raster} package to avoid producing an empty plot before the actual Google image.
+#' This function is very slightly modified from `.plotCT` function in `raster` package to avoid producing an empty plot before the actual Google image.
 #'
-#' @param x RasterLayer, as obtained through \code{\link[dismo]{gmap}}.
-#' @param maxpixels integer > 0. Maximum number of cells to use for the plot. If \code{maxpixels < ncell(x)}, \code{sampleRegular} is used before plotting. If \code{gridded=TRUE} maxpixels may be ignored to get a larger sample.
+#' @param x RasterLayer, as obtained through [dismo::gmap()].
+#' @param maxpixels integer > 0. Maximum number of cells to use for the plot. If `maxpixels < ncell(x)`, `sampleRegular` is used before plotting. If `gridded=TRUE` maxpixels may be ignored to get a larger sample.
 #' @param ext An extent object to zoom in a region
 #' @param interpolate Logical. Should the image be interpolated (smoothed)?
 #' @param axes not used
@@ -16,7 +16,7 @@
 #' @param addfun Function to add additional items such as points or polygons to the plot (map). Typically containing statements like "points(xy); plot(polygons, add=TRUE)". This is particularly useful to add something to each map when plotting a multi-layer Raster* object.
 #' @param zlim not used
 #' @param zlimcol not used
-#' @param ... Graphical parameters. Any argument that can be passed to \code{\link[graphics]{rasterImage}}.
+#' @param ... Graphical parameters. Any argument that can be passed to [graphics::rasterImage()].
 #'
 #' @return A plot.
 #'

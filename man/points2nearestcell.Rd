@@ -18,7 +18,7 @@ points2nearestcell(
 \arguments{
 \item{locs}{A SpatialPoints or SpatialPointsDataFrame.}
 
-\item{ras}{\code{Raster*} object.}
+\item{ras}{\verb{Raster*} object.}
 
 \item{layer}{Integer. For RasterStack and RasterBrick objects, layer to use.}
 

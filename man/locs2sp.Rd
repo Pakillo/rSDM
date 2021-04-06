@@ -9,7 +9,7 @@ locs2sp(locs, proj = "+init=epsg:4326", lon.col = NULL, lat.col = NULL)
 \arguments{
 \item{locs}{A matrix or dataframe containing coordinates data. If a matrix, the first two columns will be assumed to contain longitude and latitude coordinates, respectively. If a dataframe, the function will try to guess the columns containing the coordinates based on column names.}
 
-\item{proj}{Character string specifying the projection (see \code{\link[sp]{proj4string}} or
+\item{proj}{Character string specifying the projection (see \code{\link[sp:is.projected]{sp::proj4string()}} or
 \url{http://spatialreference.org}). Default is geographic (unprojected) coordinates, datum WGS84.}
 
 \item{lon.col}{Character (optional). Name of the column containing longitude data.}

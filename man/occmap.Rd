@@ -20,19 +20,19 @@ occmap(
 )
 }
 \arguments{
-\item{locs}{A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link{locs2sp}}.}
+\item{locs}{A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link[=locs2sp]{locs2sp()}}.}
 
 \item{ras}{Raster* object to be used as background for points. Default is NULL, in which case a background map defined by \code{bg} will be used.}
 
 \item{bg}{Type of background map. Either
-'google' for Google maps background (using \code{\link[dismo]{gmap}}) (note this requires a Google API key - currently not working!),
+'google' for Google maps background (using \code{\link[dismo:gmap]{dismo::gmap()}}) (note this requires a Google API key - currently not working!),
 'coast' for coastlines (using \code{coastsCoarse} from \pkg{rworldmap} package),
-'ggmap' for maps provided by \code{\link[ggmap]{get_map}} in \pkg{ggmap} package,
+'ggmap' for maps provided by \code{\link[ggmap:get_map]{ggmap::get_map()}} in \pkg{ggmap} package,
 'leaflet' for an interactive HTML map using \pkg{leaflet},
 'mapmisc' for using any of the layers available in \pkg{mapmisc} package, or
 'kml' for producing a KMZ file to be opened with Google Earth.}
 
-\item{proj}{Character string specifying the projection of coordinates data (see \code{\link[sp]{proj4string}} or \url{http://spatialreference.org}). Default is geographic (unprojected) coordinates, datum WGS84. Not used if locs is already an Spatial object with defined projection.}
+\item{proj}{Character string specifying the projection of coordinates data (see \code{\link[sp:is.projected]{sp::proj4string()}} or \url{http://spatialreference.org}). Default is geographic (unprojected) coordinates, datum WGS84. Not used if locs is already an Spatial object with defined projection.}
 
 \item{pcol}{Colour to be used for points. Default is "red".}
 
@@ -44,7 +44,7 @@ occmap(
 
 \item{leaflet.base}{Leaflet map to be used as basemap to add further points when add is TRUE.}
 
-\item{mapmisc_server}{character. Server/type of background map to be used when bg = "mapmisc". Run \code{\link[mapmisc]{osmTiles}} to see all the available layers.}
+\item{mapmisc_server}{character. Server/type of background map to be used when bg = "mapmisc". Run \code{\link[mapmisc:openmap]{mapmisc::osmTiles()}} to see all the available layers.}
 
 \item{filename}{Character. Path and filename of the KMZ file produced when bg = "kml".}
 

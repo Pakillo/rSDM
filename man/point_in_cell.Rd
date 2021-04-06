@@ -7,7 +7,7 @@
 point_in_cell(locs, ras, layer = 1)
 }
 \arguments{
-\item{locs}{A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link{locs2sp}}.}
+\item{locs}{A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link[=locs2sp]{locs2sp()}}.}
 
 \item{ras}{Raster* object}
 

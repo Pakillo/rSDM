@@ -22,7 +22,7 @@ plot_gmap(
 )
 }
 \arguments{
-\item{x}{RasterLayer, as obtained through \code{\link[dismo]{gmap}}.}
+\item{x}{RasterLayer, as obtained through \code{\link[dismo:gmap]{dismo::gmap()}}.}
 
 \item{maxpixels}{integer > 0. Maximum number of cells to use for the plot. If \code{maxpixels < ncell(x)}, \code{sampleRegular} is used before plotting. If \code{gridded=TRUE} maxpixels may be ignored to get a larger sample.}
 
@@ -48,7 +48,7 @@ plot_gmap(
 
 \item{zlimcol}{not used}
 
-\item{...}{Graphical parameters. Any argument that can be passed to \code{\link[graphics]{rasterImage}}.}
+\item{...}{Graphical parameters. Any argument that can be passed to \code{\link[graphics:rasterImage]{graphics::rasterImage()}}.}
 }
 \value{
 A plot.

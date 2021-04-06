@@ -8,15 +8,15 @@
 #' @importFrom class knn1
 #' @importFrom graphics segments
 #' @param locs A SpatialPoints or SpatialPointsDataFrame.
-#' @param ras \code{Raster*} object.
+#' @param ras `Raster*` object.
 #' @param layer Integer. For RasterStack and RasterBrick objects, layer to use.
 #' @param move Logical. Change coordinates of points to those of the nearest raster cells?
-#' @param distance Numeric (optional). Maximum distance to move points. Point coordinates are only changed if the distance to the nearest raster cell is below \code{distance}.
+#' @param distance Numeric (optional). Maximum distance to move points. Point coordinates are only changed if the distance to the nearest raster cell is below `distance`.
 #' @param showchanges Logical. Print table with old and new coordinates.
 #' @param showmap Logical. Show map with original and new coordinates?
 #' @param leaflet Logical. If TRUE, show leaflet map instead of static map.
 #' @return A SpatialPointsDataFrame (with corrected coordinates if move is TRUE).
-#' @seealso \url{https://github.com/SEEG-Oxford/seegSDM/blob/master/man/nearestLand.Rd} and \url{https://stackoverflow.com/questions/27562076/if-raster-value-na-search-and-extract-the-nearest-non-na-pixel} and \url{http://stackoverflow.com/questions/26652629/extracting-a-value-from-a-raster-for-a-specific-point-based-on-the-closest-cell/26688361#26688361} and \url{https://rdrr.io/cran/spatstat/man/nearest.raster.point.html}.
+#' @seealso <https://github.com/SEEG-Oxford/seegSDM/blob/master/man/nearestLand.Rd> and <https://stackoverflow.com/questions/27562076/if-raster-value-na-search-and-extract-the-nearest-non-na-pixel> and <http://stackoverflow.com/questions/26652629/extracting-a-value-from-a-raster-for-a-specific-point-based-on-the-closest-cell/26688361#26688361> and <https://rdrr.io/cran/spatstat/man/nearest.raster.point.html>.
 #' @examples
 #' \dontrun{
 #' data(acaule)
