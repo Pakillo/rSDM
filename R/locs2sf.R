@@ -1,6 +1,6 @@
-#' Convert matrix or dataframe with point coordinates to a spatial (sf) object
+#' Convert matrix or data frame with point coordinates to a spatial (sf) object
 #'
-#' @param locs A matrix or data.frame containing point coordinates data.
+#' @param locs A matrix or data frame containing point coordinates data.
 #' If a matrix, the first two columns will be assumed to contain longitude
 #'  and latitude coordinates, respectively.
 #' If a dataframe, the function will try to guess the columns containing the coordinates
@@ -34,8 +34,13 @@ locs2sf <- function(locs, crs = 4326, lon.col = NULL, lat.col = NULL) {
   # This version adapted from mapr::occ2sp
 
   if (ncol(locs) > 1){
+    n.orig <- nrow(locs)
     locs <- guess_latlon(locs, lat = lat.col, lon = lon.col)    # guess columns with coordinate data
     locs <- locs[!is.na(locs$longitude) & !is.na(locs$latitude), ]  # omit cases without coordinates
+    n.nona <- nrow(locs)
+    if (n.orig > n.nona) {
+      warning("Some rows missing coordinates have been excluded.")
+    }
     locs.sf <- sf::st_as_sf(locs, coords = c("longitude", "latitude"), crs = crs)
     return(locs.sf)
   }
