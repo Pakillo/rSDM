@@ -1,9 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-TODO.md
+
 newstuff/
 README.Rmd
 README.md
 
-^\.travis\.yml$
 ^docs$
