@@ -7,13 +7,11 @@
 
 #' Map species occurrences
 #'
-#' Plot map of species occurrences (or any set of georeferenced points) on top of different background layers.
+#' Plot map of species occurrences (or any set of point coordinates) on top of different background layers.
 #'
 #'
 #' @export
 #' @return A map (plot), unless `bg = 'KML'` in which case a kmz file is saved to be explored with Google Earth. In some cases, a raster layer, leaflet object, or ggplot object is returned in addition to the map.
-#' @import sp
-#' @import rgdal
 #' @importFrom scales alpha
 #' @param locs A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using [locs2sp()].
 #' @param proj Character string specifying the projection of coordinates data (see [sp::proj4string()] or <http://spatialreference.org>). Default is geographic (unprojected) coordinates, datum WGS84. Not used if locs is already an Spatial object with defined projection.
@@ -80,95 +78,57 @@
 
 
 
-occmap <- function(locs, ras = NULL, bg = 'ggmap', proj = "+init=epsg:4326",
-                   pcol = 'red', alpha = 1, psize = 1,
-                   add = FALSE, leaflet.base = NULL,
-                   mapmisc_server = "maptoolkit", filename = "occmap.kmz",
-                   ...){
+occmap <- function(locs,
+                   ras = NULL,
+                   bg = "Esri.WorldImagery",
+                   type = c("base", "ggplot", "leaflet"),
+                   pcol = 'red',
+                   alpha = 1,
+                   psize = 1,
+                   add = FALSE,
+                   leaflet.base = NULL,
+                   ...) {
 
-
-  # Create Spatial object
-  if (!inherits(locs, c("SpatialPoints", "SpatialPointsDataFrame"))) {
-    locs <- locs2sp(locs, proj = proj)
+  if (!inherits(locs, "sf")) {
+    if (!inherits(locs, "SpatVector")) {
+      stop("locs must be a sf or SpatVector object. You may find 'locs2sf()' or 'locs2vect()' useful.")
+    }
   }
 
-  if (is.na(proj4string(locs))) proj4string(locs) <- CRS(proj)
+  if (inherits(locs, "SpatVector")) {
+    locs <- sf::st_as_sf(locs)
+  }
+
+  if (is.null(ras)) {
+    if (!is.null(bg)) {
+      if (type != "leaflet") {
+        ras <- maptiles::get_tiles(x = locs, provider = bg)
+      }
+    }
+  }
+
+  type <- match.arg(type)
 
   ## Project to geographical for mapping
-  locs <- spTransform(locs, CRS("+init=epsg:4326"))
+  locs <- sf::st_transform(locs, crs = 4326)
 
-  if (alpha < 1) pcol <- scales::alpha(pcol, alpha)  # transparency
-
-
+  if (alpha < 1) pcol <- scales::alpha(pcol, alpha)  # point transparency
 
 
   ### PLOTTING ###
 
+  if (type == "base") {
+    map_terra(locs = locs, ras = ras, add = add, pcol = pcol, psize = psize, ...)
+  }
 
-  if (!is.null(ras)){   # if raster provided, use it as background
+  if (type == "ggplot") {
+    return(map_ggplot(locs = locs, ras = ras, pcol = pcol, psize = psize, ...))
+  }
 
-    map_raster(locs, ras, add = add, pcol = pcol, psize = psize, ...)
-
-  } else {
-
-    # if (isTRUE(add)){
-    #
-    #   map_raster(locs, ras, add = add, pcol = pcol, psize = psize, ...)
-    #
-    # } else {      # use map as defined by 'bg'
-
-      ### Google Maps background (using dismo::gmap) ###
-
-      if (bg == 'google'){
-        bgmap <- map_gmap(locs, pcol = pcol, psize = psize, add = add, ...)
-      }
-
-
-      ### KML ###
-
-      if (bg == "kml")
-        map_kml(locs, filename = filename, ...)
-
-
-      ### Coastlines only ###
-
-      if (bg == 'coast')
-        map_coast(locs, add = add, pcol = pcol, psize = psize, ...)
-
-
-
-      ### Leaflet map ###
-
-      if (bg == "leaflet"){
-        bgmap <- map_leaflet(locs, pcol = pcol, alpha = alpha, psize = psize,
-                             add = add, prev.map = leaflet.base, ...)
-      }
-
-
-
-      ### ggmap ###
-
-      if (bg == "ggmap"){
-        bgmap <- map_ggmap(locs, add = add, pcol = pcol, psize = psize, ...)
-      }
-
-
-
-
-      ##### Using Oscar Perpinan's approach (spplot) #####
-
-      if (bg == "spplot")
-        map_spplot(locs)
-
-
-      ### using mapmisc ###
-
-      if (bg == "mapmisc"){
-        bgmap <- map_mapmisc(locs, add = add, pcol = pcol, psize = psize, ...)
-      }
-
-    }
-
+  if (type == "leaflet") {
+    bgmap <- map_leaflet(locs = locs, pcol = pcol, alpha = alpha, psize = psize,
+                         prev.map = leaflet.base, ...)
+  }
 
   if (exists("bgmap")) invisible(bgmap)
 
@@ -178,133 +138,95 @@ occmap <- function(locs, ras = NULL, bg = 'ggmap', proj = "+init=epsg:4326",
 
 
 
-
-
-
-
 ###### INDIVIDUAL PLOTTING FUNCTIONS ######
 
+#### Map with terra (base) ####
 
-#### Plot onto google map through dismo ####
+map_terra <- function(locs = NULL, ras = NULL, add = FALSE, pcol, psize, ...) {
 
-#' @importFrom dismo Mercator gmap
-#' @importFrom raster plot
+  if (!isTRUE(add)) {
+    if (is.null(ras)) {
+      terra::plot(coastsCoarse,
+                  xlim = c(min(sf::st_coordinates(locs)[,1]) - 1,
+                           max(sf::st_coordinates(locs)[,1]) + 1),
+                  ylim = c(min(sf::st_coordinates(locs)[,2]) - 1,
+                           max(sf::st_coordinates(locs)[,2]) + 1),
+                  ...)
+    }
 
-map_gmap <- function(locs, pcol, psize, add, ...){
-
-  locs.GM <- dismo::Mercator(coordinates(locs))
-  bgmap <- dismo::gmap(locs.GM, lonlat = TRUE, ...)
-
-  # Plot
-  if (add == FALSE) plot_gmap(bgmap, interpolate = TRUE)
-  points(coordinates(locs), pch=20, col=pcol, cex=psize)
-  invisible(bgmap)
-
-}
-
-
-
-
-
-#### Generate KML/KMZ file for Google Earth ####
-
-#' @importFrom raster KML
-
-map_kml <- function(locs, filename, ...){
-  raster::KML(locs, filename = filename, overwrite = TRUE, ...)
-}
-
-
-
-#### Map onto user-provided raster ####
-
-#' @importFrom raster plot
-#' @importFrom graphics points
-
-map_raster <- function(locs, ras, add, pcol, psize, ...){
-
-  if (add == FALSE) {
-    if (length(ras@legend@colortable) > 0) {
-      plot_gmap(ras, interpolate = TRUE, ...)
-    } else {
-      raster::plot(ras, interpolate = TRUE, ...)
+    if (!is.null(ras)) {
+      if (terra::nlyr(ras) == 3) {
+        maptiles::plot_tiles(ras, ...)
+      }
+      terra::plot(ras, ...)
     }
 
   }
-  points(locs, pch = 20, col = pcol, cex = psize)
+
+  # add points
+  locs <- locs[, 1]
+  terra::plot(locs, add = TRUE, pch = 20, col = pcol, cex = psize)
 
 }
 
 
-### Coastlines only ####
 
-map_coast <- function(locs, add, pcol, psize, ...){
 
-  if (add==FALSE){
-    plot(coastsCoarse,
-         xlim=c(min(coordinates(locs)[,1])-1, max(coordinates(locs)[,1])+1),
-         ylim=c(min(coordinates(locs)[,2])-1, max(coordinates(locs)[,2])+1), ...)
+#### Map with ggplot on top of coastlines (borders) ####
+
+map_ggplot <- function(locs = NULL, ras = NULL, pcol, psize, ...) {
+
+  locs.bbox <- sf::st_bbox(locs)
+
+  occmap <- ggplot2::ggplot(locs) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(x = "", y = "")
+
+  if (is.null(ras)) {
+    occmap <- occmap +
+      ggplot2::borders(fill = "grey95", colour = NA)
   }
-  points(locs, pch=20, col=pcol, cex=psize)
-}
 
-
-
-### Leaflet maps ###
-
-#' @import leaflet
-
-map_leaflet <- function(locs, pcol, alpha, psize, add, prev.map, ...){
-
-  if (add == FALSE){
-
-  bgmap <- leaflet(locs) %>%
-    fitBounds(bbox(locs)[1,1], bbox(locs)[2,1], bbox(locs)[1,2], bbox(locs)[2,2]) %>%
-    addTiles() %>%
-    addCircleMarkers(stroke = FALSE, fillColor = pcol, fillOpacity = alpha,
-                     radius = 3*psize, ...)
-
-
-  } else {
-    bgmap <- prev.map %>%
-      addCircleMarkers(data = locs,
-                       stroke = FALSE, fillColor = pcol, fillOpacity = alpha,
-                       radius = 3*psize, ...)
+  if (!is.null(ras)) {
+    if (terra::nlyr(ras) == 3) {
+      occmap <- occmap +
+        tidyterra::geom_spatraster_rgb(data = ras, ...)
+    } else {
+      occmap <- occmap +
+        tidyterra::geom_spatraster(data = ras, ...)
+    }
 
   }
 
-  print(bgmap)
-  invisible(bgmap)
+  occmap <- occmap +
+    ggplot2::geom_sf(size = psize, col = pcol) +
+    ggplot2::coord_sf(
+      xlim = c(locs.bbox$xmin - 1, locs.bbox$xmax + 1),
+      ylim = c(locs.bbox$ymin - 1, locs.bbox$ymax + 1)
+    )
+
+  return(occmap)
+
 }
 
+#### Leaflet maps ####
 
+map_leaflet <- function(locs = NULL, pcol, alpha, psize, prev.map = NULL, ...) {
 
+  if (is.null(prev.map)) {
 
-### GGMAP ###
+    bgmap <- leaflet::leaflet(locs) |>
+      leaflet::addTiles() |>
+      leaflet::addCircleMarkers(stroke = FALSE, fillColor = pcol,
+                                fillOpacity = alpha, radius = 3*psize, ...)
 
-#' @importFrom sp coordinates
-#' @import ggmap ggplot2
+  }
 
-map_ggmap <- function(locs, add, pcol, psize, ...){
-
-  if (add == FALSE){
-    bblocs <- bbox(locs)
-    bblocs <- (bblocs - rowMeans(bblocs)) * 1.05 + rowMeans(bblocs)
-          # increase bblocs by 5% (as in R. Lovelace's tutorial)
-    bgmap <- ggmap::get_map(bblocs, crop = FALSE, ...)
-
-    ## plot
-    bgmap <- ggmap(bgmap) +
-            geom_point(data = data.frame(lon=coordinates(locs)[,1], lat=coordinates(locs)[,2]),
-                       aes(x=lon, y=lat), colour=pcol, size=psize, alpha=1) +
-            xlab("Longitude") + ylab("Latitude")
-
-
-  } else {
-
-    bgmap <- last_plot() +
-      geom_point(aes(x=lon, y=lat), colour=pcol, size=psize, alpha=1,
-                 data = data.frame(lon=coordinates(locs)[,1], lat=coordinates(locs)[,2]))
+  if (!is.null(prev.map)) {
+    bgmap <- prev.map |>
+      leaflet::addCircleMarkers(data = locs,
+                                stroke = FALSE, fillColor = pcol, fillOpacity = alpha,
+                                radius = 3*psize, ...)
 
   }
 
@@ -314,75 +236,14 @@ map_ggmap <- function(locs, add, pcol, psize, ...){
 }
 
 
-### Using spplot a la Perpiñan ###
-# see http://procomun.wordpress.com/2013/04/24/stamen-maps-with-spplot/
-
-#' @importFrom ggmap get_map
-
-map_spplot <- function(locs){
-
-  stop("map_spplot does not work yet")
-
-  ## Download stamen tiles using the bounding box of the SpatialPointsDataFrame object
-  #bbPoints <- bbox(caPV)
-  gmap <- get_map(c(bbox(locs)), crop = FALSE, maptype='terrain')  # source = "stamen", maptype = "watercolor"
-
-  ## http://spatialreference.org/ref/sr-org/6864/
-  ## Bounding box of the map to resize and position the image with grid.raster
-  bbMap <- attr(gmap, 'bb')
-  latCenter <- with(bbMap, ll.lat + ur.lat)/2
-  lonCenter <- with(bbMap, ll.lon + ur.lon)/2
-  height <- with(bbMap, ur.lat - ll.lat)
-  width <- with(bbMap, ur.lon - ll.lon)
-
-  ## Use sp.layout of spplot: a list with the name of the function
-  ## ('grid.raster') and its arguments
-  sp.raster <- list('grid.raster', gmap,
-                    x=lonCenter, y=latCenter,
-                    width=width, height=height,
-                    default.units='native')
-
-  #     ## Define classes and sizes of the circle for each class
-  #     breaks <- c(100, 200, 500, 1e3, 25e3)
-  #     classes <- cut(caPV$Pdc.kW, breaks)
-  #     meds <- tapply(caPV$Pdc.kW, classes, FUN=median)
-  #     sizes <- (meds/max(meds))^0.57 * 1.8
-
-  ## Finally, the spplot function
-  spplot(locs[, "lon"],
-         #  cuts = breaks,
-         col.regions=pcol,   #brewer.pal(n=1, 'Greens'),
-         #   cex=sizes,
-         edge.col='black', alpha=0.7,
-         scales=list(draw=FALSE), #key.space='right',
-         sp.layout=sp.raster)
-}
 
 
 
 
-### using mapmisc ###
 
-#' @importFrom mapmisc openmap map.new
-#' @importFrom raster plot plotRGB nlayers
 
-map_mapmisc <- function(locs, add, pcol, psize, ...){
 
-  if (add == FALSE) {
 
-    bgmap <- openmap(locs, path = mapmisc_server)
-    map.new(locs, legendRight = FALSE)
 
-    if (nlayers(bgmap) > 1) {
-      raster::plotRGB(bgmap, add = TRUE, interpolate = TRUE, ...)
-    } else
-      raster::plot(bgmap, add = TRUE, interpolate = TRUE, ...)
-  }
-
-  points(locs, pch = 20, col = pcol, cex = psize)
-
-  invisible(bgmap)
-
-}
 
 
