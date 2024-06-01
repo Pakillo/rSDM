@@ -4,10 +4,9 @@ Francisco Rodriguez-Sanchez
 
 <!-- badges: start -->
 
-[![Travis-CI Build
-Status](https://travis-ci.org/Pakillo/rSDM.svg?branch=master)](https://travis-ci.org/Pakillo/rSDM)
-[![HitCount
-since 2020-06-14](http://hits.dwyl.com/Pakillo/rSDM.svg)](http://hits.dwyl.com/Pakillo/rSDM)
+[![R-CMD-check](https://github.com/Pakillo/rSDM/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Pakillo/rSDM/actions/workflows/R-CMD-check.yaml)
+[![HitCount since
+2020-06-14](http://hits.dwyl.com/Pakillo/rSDM.svg)](http://hits.dwyl.com/Pakillo/rSDM)
 <!-- badges: end -->
 
 <https://pakillo.github.io/rSDM/>
@@ -17,5 +16,5 @@ since 2020-06-14](http://hits.dwyl.com/Pakillo/rSDM.svg)](http://hits.dwyl.com/P
 To install:
 
 ``` r
-devtools::install_github("Pakillo/rSDM")
+remotes::install_github("Pakillo/rSDM")
 ```
