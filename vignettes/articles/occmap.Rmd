@@ -1,0 +1,95 @@
+---
+title: "Map occurrences (point coordinates)"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rSDM)
+```
+
+Let's create example point coordinates and convert them to a spatial (sf) object:
+
+```{r}
+locs <- data.frame(lon = c(-5.8, -5.5, -5.9), lat = c(35.7, 36.2, 36.5))
+locs <- locs2sf(locs, crs = 4326)
+locs
+```
+
+Note that SpatVector objects (from terra) are also accepted, and can be created using `rSDM::locs2vect()`.
+
+## Default map with occmap
+
+Unless a raster `ras` is provided, `occmap` will automatically download a background map from the internet. 
+
+```{r fig.keep='last'}
+occmap(locs, psize = 6)
+```
+
+The background map can be easily changed using the `bg` argument:
+
+```{r fig.keep='last'}
+occmap(locs, psize = 6, bg = "CartoDB.Positron")
+```
+
+
+
+## Interactive (leaflet) map
+
+```{r}
+occmap(locs, psize = 6, type = "leaflet")
+occmap(locs, psize = 6, type = "leaflet", bg = "CartoDB.Positron")
+```
+
+
+## ggplot map
+
+```{r}
+occmap(locs, psize = 6, type = "ggplot")
+```
+
+
+## Adding points to a previous map
+
+Let's create some new coordinates (e.g. for a different species):
+
+```{r}
+new.locs <- data.frame(lon = c(-5.8, -5.4), lat = c(36.2, 36.5))
+new.locs.sf <- locs2sf(new.locs, crs = 4326)
+```
+
+### Using 'base' maps
+
+Note the `add = TRUE` argument:
+
+```{r fig.keep='last'}
+map <- occmap(locs, psize = 6)
+occmap(new.locs.sf, add = TRUE, psize = 6, pcol = "blue")
+```
+
+
+### Adding points to a previous map (leaflet)
+
+Note the previous map has to be provided (using `prev.map` argument):
+
+```{r}
+map <- occmap(locs, psize = 6, type = "leaflet")
+occmap(new.locs.sf, prev.map = map, psize = 6, pcol = "blue")
+```
+
+
+### Adding points to a previous map (ggplot)
+
+Note the previous map has to be provided (using `prev.map` argument):
+
+```{r}
+map <- occmap(locs, psize = 6, type = "ggplot")
+occmap(new.locs.sf, prev.map = map, psize = 6, pcol = "blue")
+```
+
+

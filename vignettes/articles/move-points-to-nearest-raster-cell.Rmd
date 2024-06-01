@@ -1,0 +1,77 @@
+---
+title: "Move points to nearest raster cell"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rSDM)
+```
+
+`rSDM` includes a handy function to move points to the nearest raster cell with data (i.e. not NA).
+
+## Example data
+
+Let's generate example point coordinates:
+
+```{r}
+locs <- data.frame(lon = c(1, 2, 1, 2, 2.2), lat = c(1.2, 1, 2.3, 3, 2))
+locs.sf <- locs2sf(locs)
+locs.sf
+```
+
+Now let's generate an example raster:
+
+```{r}
+library(terra)
+ras <- rast(nrows = 2, ncols = 2, xmin = 0.5, xmax = 3.5, ymin = 0.5, ymax = 3.5,
+ resolution = 1, vals = c(NA, 1, 1, NA, NA, 1, NA, 1, 1))
+```
+
+As we can see in the map below, some points fall outside raster cells with data:
+
+```{r}
+occmap(locs.sf, ras, pcol = "black", psize = 3)
+```
+
+## Move point coordinates to nearest raster cell
+
+```{r}
+moved <- points2nearestcell(locs.sf, ras)
+```
+
+Note you can choose the format of the output map, e.g. now using ggplot (interactive leaflet maps are available too):
+
+```{r}
+points2nearestcell(locs.sf, ras, map = "ggplot")
+```
+
+The function returns a spatial object where the coordinates of the points falling outside the raster have been moved:
+
+```{r}
+moved
+```
+
+Let's compare the original and new coordinates:
+
+```{r}
+sf::st_coordinates(locs.sf)
+sf::st_coordinates(moved)
+```
+
+If you don't want to change coordinates but only check which would the nearest raster cells for each point, use `move = FALSE`.
+
+## Move points to nearest raster cell within a given distance
+
+In case you want to move points **only** if the nearest raster cell is within a given distance, you could use the `distance` argument to set a threshold:
+
+```{r}
+moved <- points2nearestcell(locs.sf, ras, distance = 100000)
+```
+
+
