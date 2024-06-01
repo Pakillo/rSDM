@@ -51,8 +51,7 @@ locs.sf <- locs2sf(locs)
 library(terra)
 ras <- rast(nrows = 2, ncols = 2, xmin = 0.5, xmax = 3.5, ymin = 0.5, ymax = 3.5,
  resolution = 1, vals = c(NA, 1, 1, NA, NA, 1, NA, 1, 1))
-plot(ras)
-plot(locs.sf, pch = 20, cex = 3, add = TRUE)
+occmap(locs.sf, ras, pcol = "black", psize = 3)
 
 ## Move point coordinates falling outside of raster
 moved <- points2nearestcell(locs.sf, ras)
