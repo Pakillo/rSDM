@@ -54,6 +54,8 @@ points2nearestcell <- function(locs = NULL,
 
   map <- match.arg(map)
 
+  locs.orig <- locs
+
   if (inherits(locs, "SpatVector")) {
     locs <- sf::st_as_sf(locs)
   }
@@ -162,6 +164,10 @@ points2nearestcell <- function(locs = NULL,
     message("All points fall within a raster cell")
   }
 
+
+  if (inherits(locs.orig, "SpatVector")) {
+    locs <- terra::vect(locs)
+  }
 
   return(locs)
 
