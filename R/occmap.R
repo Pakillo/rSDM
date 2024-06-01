@@ -1,82 +1,64 @@
-# TO DO:
-# - possibility to add legend (e.g. species name)
-# - possibility to add axes with coordinates
-# - possibility to add scale bar (mapmisc::scaleBar)
-
-
 
 #' Map species occurrences
 #'
 #' Plot map of species occurrences (or any set of point coordinates) on top of different background layers.
 #'
+#' @param locs An [sf::sf()] or [terra::SpatVector()] object with point coordinates,
+#' e.g. as generated from [locs2sf()] or [locs2vect()].
+#' @param ras A [terra::SpatRaster()] object to be used as background for points.
+#' If NULL (default), a background map defined by `bg` will be used.
+#' @param bg Character. Type of background map to be used if `ras` is not provided.
+#' `bg` should be one of the providers listed in [maptiles::get_tiles()] if
+#' `type` is 'base' or 'ggplot', or one of the providers listed in
+#' [leaflet::addProviderTiles()] if `type` is 'leaflet'.
+#' @param type Character. One of "base", "ggplot" or "leaflet" to define the type
+#' of map produced.
+#' @param pcol Colour to be used for points. Default is "red".
+#' @param alpha Colour transparency for points, between 0 (fully transparent)
+#' and 1 (fully opaque).
+#' @param psize Point size. Default is 1 (cex = 1).
+#' @param add Logical. Add `locs` coordinates to a previous 'base' map? (e.g. for a new species).
+#' @param prev.map Map to be used as basemap to add further points
+#' (only applicable for "leaflet" and "ggplot" map types).
+#' @param ... additional parameters to be passed to
+#' [terra::plot()] if `type = "base"`
+#' [tidyterra::geom_spatraster()] if `type = "ggplot"`
+#' or [leaflet::addCircleMarkers()] if `type = "leaflet"`.
 #'
 #' @export
-#' @return A map (plot), unless `bg = 'KML'` in which case a kmz file is saved to be explored with Google Earth. In some cases, a raster layer, leaflet object, or ggplot object is returned in addition to the map.
-#' @importFrom scales alpha
-#' @param locs A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using [locs2sp()].
-#' @param proj Character string specifying the projection of coordinates data (see [sp::proj4string()] or <http://spatialreference.org>). Default is geographic (unprojected) coordinates, datum WGS84. Not used if locs is already an Spatial object with defined projection.
-#' @param ras Raster* object to be used as background for points. Default is NULL, in which case a background map defined by `bg` will be used.
-#' @param bg Type of background map. Either
-#' 'google' for Google maps background (using [dismo::gmap()]) (note this requires a Google API key - currently not working!),
-#' 'coast' for coastlines (using `coastsCoarse` from \pkg{rworldmap} package),
-#' 'ggmap' for maps provided by [ggmap::get_map()] in \pkg{ggmap} package,
-#' 'leaflet' for an interactive HTML map using \pkg{leaflet},
-#' 'mapmisc' for using any of the layers available in \pkg{mapmisc} package, or
-#' 'kml' for producing a KMZ file to be opened with Google Earth.
-#' @param pcol Colour to be used for points. Default is "red".
-#' @param alpha Colour transparency for points, between 0 (fully transparent) and 1 (fully opaque).
-#' @param psize Point size. Default is 1 (cex = 1).
-#' @param add Logical. Add these occurrences to a previous map? (e.g. for a new species). Default is FALSE. Note this feature doesn't work for all map types. For leaflet maps, when add = TRUE, a leaflet basemap (e.g. as produced by a previous call to occmap) must be provided (see `leaflet.base`).
-#' @param leaflet.base Leaflet map to be used as basemap to add further points when add is TRUE.
-#' @param mapmisc_server character. Server/type of background map to be used when bg = "mapmisc". Run [mapmisc::osmTiles()] to see all the available layers.
-#' @param filename Character. Path and filename of the KMZ file produced when bg = "kml".
-#' @param ... additional parameters to be passed to
-#' dismo::gmap if bg == 'google'
-#' plot if bg == 'coast'
-#' ggmap::get_map if bg == 'ggmap'
-#' leafletR::leaflet if bg == 'leaflet'
-#' raster::plot or raster::plotRGB if bg == 'mapmisc'
-#' See these functions help files for details.
-#' @details If using ggmap and stamen maps, large regions seem to give problems.
-#' @examples
-#' \dontrun{
-#' # Using acaule dataset from dismo package:
-#' library(dismo)
-#' data(acaule)
-#'
-#' occmap(locs = acaule)  # If 'ras' not provided, default is bg = "ggmap"
-#' occmap(acaule, bg = "coast")  # just coastlines as background map
-#' occmap(acaule, bg = "leaflet") # leaflet interactive map
-#'
-#' # Watercolor map from Stamen using ggmap
-#' # NB: use small regions, otherwise give error to download map tiles
-#' locs_redux <- subset(acaule, lon > -80 & lon < -60 & lat > -30 & lat < -10)
-#' occmap(locs = locs_redux, maptype = 'watercolor', source = 'stamen',
-#'            pcol = "darkgreen", psize = 4)
-#'
-#' # Plot occurrences in a specific country:
-#' occmap(locs = subset(acaule, country=="Bolivia"), bg = "leaflet")
-#' # (note there are georeferencing errors in the data)
-#'
-#'
-#' # Add transparency to points
-#' occmap(locs = acaule, pcol = "red", alpha = 0.5, bg = "coast")
-#' occmap(locs = acaule, pcol = "red", alpha = 0.5, bg = "leaflet")
-#'
-#'
-#' ## Providing spatial objects ##
-#' data(meuse)
-#' coordinates(meuse) <- ~x+y
-#' proj4string(meuse) <- CRS("+init=epsg:28992")
-#' occmap(meuse)
-#'
-#' #alternatively, provide projection argument:
-#' data(meuse)
-#' coordinates(meuse) <- ~x+y
-#' occmap(meuse, proj = "+init=epsg:28992")
-#' }
+#' @return A map plus a leaflet or ggplot object, depending on `type`.
 
-
+#' @examplesIf interactive()
+#' ## Example coordinates
+#' locs <- data.frame(lon = c(-5.8, -5.5, -5.9), lat = c(35.7, 36.2, 36.5))
+#' locs <- locs2sf(locs, crs = 4326)
+#'
+#' ## Default map
+#' occmap(locs, psize = 6)
+#' occmap(locs, psize = 6, bg = "CartoDB.Positron") # Change background
+#'
+#' ## Interactive (leaflet) map
+#' occmap(locs, psize = 6, type = "leaflet")
+#' occmap(locs, psize = 6, type = "leaflet", bg = "CartoDB.Positron")
+#'
+#' ## ggplot map
+#' occmap(locs, psize = 6, type = "ggplot")
+#'
+#' ## Adding points to a previous map
+#' new.locs <- data.frame(lon = c(-5.8, -5.4), lat = c(36.2, 36.5))
+#' new.locs.sf <- locs2sf(new.locs, crs = 4326)
+#'
+#' ## base
+#' map <- occmap(locs, psize = 6)
+#' occmap(new.locs.sf, add = TRUE, psize = 6, pcol = "blue")
+#'
+#' ## Adding points to a previous map (leaflet)
+#' map <- occmap(locs, psize = 6, type = "leaflet")
+#' occmap(new.locs.sf, prev.map = map, psize = 6, pcol = "blue")
+#'
+#' ## Adding points to a previous map (ggplot)
+#' map <- occmap(locs, psize = 6, type = "ggplot")
+#' occmap(new.locs.sf, prev.map = map, psize = 6, pcol = "blue")
 
 occmap <- function(locs,
                    ras = NULL,
@@ -86,8 +68,18 @@ occmap <- function(locs,
                    alpha = 1,
                    psize = 1,
                    add = FALSE,
-                   leaflet.base = NULL,
+                   prev.map = NULL,
                    ...) {
+
+  type <- match.arg(type)
+  if (!is.null(prev.map)) {
+    if (inherits(prev.map, "ggplot")) {
+      type <- "ggplot"
+    }
+    if (inherits(prev.map, "leaflet")) {
+      type <- "leaflet"
+    }
+  }
 
   if (!inherits(locs, "sf")) {
     if (!inherits(locs, "SpatVector")) {
@@ -107,7 +99,6 @@ occmap <- function(locs,
     }
   }
 
-  type <- match.arg(type)
 
   ## Project to geographical for mapping
   locs <- sf::st_transform(locs, crs = 4326)
@@ -122,15 +113,18 @@ occmap <- function(locs,
   }
 
   if (type == "ggplot") {
-    return(map_ggplot(locs = locs, ras = ras, pcol = pcol, psize = psize, ...))
+    bgmap <- map_ggplot(locs = locs, ras = ras, pcol = pcol, psize = psize,
+                        prev.map = prev.map, ...)
   }
 
   if (type == "leaflet") {
-    bgmap <- map_leaflet(locs = locs, pcol = pcol, alpha = alpha, psize = psize,
-                         prev.map = leaflet.base, ...)
+    bgmap <- map_leaflet(locs = locs,
+                         bg = bg,
+                         pcol = pcol, alpha = alpha, psize = psize,
+                         prev.map = prev.map, ...)
   }
 
-  if (exists("bgmap")) invisible(bgmap)
+  if (exists("bgmap")) return(bgmap)
 
 }
 
@@ -174,36 +168,42 @@ map_terra <- function(locs = NULL, ras = NULL, add = FALSE, pcol, psize, ...) {
 
 #### Map with ggplot on top of coastlines (borders) ####
 
-map_ggplot <- function(locs = NULL, ras = NULL, pcol, psize, ...) {
+map_ggplot <- function(locs = NULL, ras = NULL, pcol, psize, prev.map, ...) {
 
-  locs.bbox <- sf::st_bbox(locs)
+  if (is.null(prev.map)) {
 
-  occmap <- ggplot2::ggplot(locs) +
-    ggplot2::theme_minimal() +
-    ggplot2::labs(x = "", y = "")
+    occmap <- ggplot2::ggplot(locs) +
+      ggplot2::theme_minimal() +
+      ggplot2::labs(x = "", y = "")
 
-  if (is.null(ras)) {
-    occmap <- occmap +
-      ggplot2::borders(fill = "grey95", colour = NA)
-  }
-
-  if (!is.null(ras)) {
-    if (terra::nlyr(ras) == 3) {
+    if (is.null(ras)) {
       occmap <- occmap +
-        tidyterra::geom_spatraster_rgb(data = ras, ...)
-    } else {
-      occmap <- occmap +
-        tidyterra::geom_spatraster(data = ras, ...)
+        ggplot2::borders(fill = "grey95", colour = NA)
     }
 
+    if (!is.null(ras)) {
+      if (terra::nlyr(ras) == 3) {
+        occmap <- occmap +
+          tidyterra::geom_spatraster_rgb(data = ras, ...)
+      } else {
+        occmap <- occmap +
+          tidyterra::geom_spatraster(data = ras, ...)
+      }
+
+    }
+
+    occmap <- occmap +
+      ggplot2::scale_fill_continuous(na.value = "transparent") +
+      ggplot2::geom_sf(size = psize, col = pcol)
+
   }
 
-  occmap <- occmap +
-    ggplot2::geom_sf(size = psize, col = pcol) +
-    ggplot2::coord_sf(
-      xlim = c(locs.bbox$xmin - 1, locs.bbox$xmax + 1),
-      ylim = c(locs.bbox$ymin - 1, locs.bbox$ymax + 1)
+  if (!is.null(prev.map)) {
+    suppressMessages(
+      {occmap <- prev.map +
+        ggplot2::geom_sf(data = locs, size = psize, col = pcol)}
     )
+  }
 
   return(occmap)
 
@@ -211,27 +211,35 @@ map_ggplot <- function(locs = NULL, ras = NULL, pcol, psize, ...) {
 
 #### Leaflet maps ####
 
-map_leaflet <- function(locs = NULL, pcol, alpha, psize, prev.map = NULL, ...) {
+map_leaflet <- function(locs = NULL,
+                        bg = NULL,
+                        pcol, alpha, psize,
+                        prev.map = NULL,
+                        ...) {
 
   if (is.null(prev.map)) {
 
-    bgmap <- leaflet::leaflet(locs) |>
-      leaflet::addTiles() |>
-      leaflet::addCircleMarkers(stroke = FALSE, fillColor = pcol,
-                                fillOpacity = alpha, radius = 3*psize, ...)
+    lfmap <- leaflet::leaflet(locs)
+
+    if (!is.null(bg)) {
+      lfmap <- leaflet::addProviderTiles(lfmap, provider = bg)
+    } else {
+      lfmap <- leaflet::addTiles(lfmap)
+    }
+
+    lfmap <- leaflet::addCircleMarkers(lfmap, stroke = FALSE, fillColor = pcol,
+                                       fillOpacity = alpha, radius = 3*psize, ...)
 
   }
 
   if (!is.null(prev.map)) {
-    bgmap <- prev.map |>
-      leaflet::addCircleMarkers(data = locs,
-                                stroke = FALSE, fillColor = pcol, fillOpacity = alpha,
-                                radius = 3*psize, ...)
+    lfmap <- leaflet::addCircleMarkers(prev.map, data = locs,
+                                       stroke = FALSE, fillColor = pcol,
+                                       fillOpacity = alpha, radius = 3*psize, ...)
 
   }
 
-  print(bgmap)
-  invisible(bgmap)
+  return(lfmap)
 
 }
 

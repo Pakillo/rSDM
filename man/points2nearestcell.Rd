@@ -2,7 +2,7 @@
 % Please edit documentation in R/points2nearestcell.R
 \name{points2nearestcell}
 \alias{points2nearestcell}
-\title{Move occurrences to the nearest raster cell with data}
+\title{Move point occurrences to the nearest raster cell with data}
 \usage{
 points2nearestcell(
   locs = NULL,
@@ -10,42 +10,59 @@ points2nearestcell(
   layer = 1,
   move = TRUE,
   distance = NULL,
-  showchanges = TRUE,
-  showmap = TRUE,
-  leaflet = FALSE
+  table = TRUE,
+  map = c("base", "ggplot", "leaflet", "none")
 )
 }
 \arguments{
-\item{locs}{A SpatialPoints or SpatialPointsDataFrame.}
+\item{locs}{An \code{\link[sf:sf]{sf::sf()}} or \code{\link[terra:SpatVector-class]{terra::SpatVector()}} object with point coordinates,
+e.g. as generated from \code{\link[=locs2sf]{locs2sf()}} or \code{\link[=locs2vect]{locs2vect()}}.}
 
-\item{ras}{\verb{Raster*} object.}
+\item{ras}{\code{\link[terra:SpatRaster-class]{terra::SpatRaster()}} object.}
 
-\item{layer}{Integer. For RasterStack and RasterBrick objects, layer to use.}
+\item{layer}{Integer. Raster layer to use for comparing with point locations (default = 1).}
 
-\item{move}{Logical. Change coordinates of points to those of the nearest raster cells?}
+\item{move}{Logical. Change coordinates of points to those of the nearest raster cells?
+If FALSE, the function will show the nearest raster cells but coordinates of \code{locs}
+will not be changed.}
 
-\item{distance}{Numeric (optional). Maximum distance to move points. Point coordinates are only changed if the distance to the nearest raster cell is below \code{distance}.}
+\item{distance}{Numeric (optional). Maximum distance to move points.
+Point coordinates are only changed if the distance to the nearest raster cell
+is below \code{distance}.}
 
-\item{showchanges}{Logical. Print table with old and new coordinates.}
+\item{table}{Logical. Print table with old and new coordinates?}
 
-\item{showmap}{Logical. Show map with original and new coordinates?}
-
-\item{leaflet}{Logical. If TRUE, show leaflet map instead of static map.}
+\item{map}{Character. One of "none", "base", "ggplot" or "leaflet", to choose
+the type of map showing the old and new point coordinates. See \code{\link[=occmap]{occmap()}}.}
 }
 \value{
-A SpatialPointsDataFrame (with corrected coordinates if move is TRUE).
+An \code{\link[sf:sf]{sf::sf()}} or \code{\link[terra:SpatVector-class]{terra::SpatVector()}} object
+(with corrected coordinates if move is TRUE).
 }
 \description{
-Move point occurrences falling in raster cells without data (i.e. NA) to the nearest raster cell with data.
+Move point occurrences falling in raster cells without data (NA) to the
+nearest raster cell with data.
 }
 \examples{
-\dontrun{
-data(acaule)
-locs <- locs2sp(acaule)
-ras <- getData('worldclim', var = 'tmin', res = 10)
-check.coords <- points2nearestcell(locs, ras)
-}
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+## Generate example point coordinates and raster
+locs <- data.frame(lon = c(1, 2, 1, 2, 2.2), lat = c(1.2, 1, 2.3, 3, 2))
+locs.sf <- locs2sf(locs)
+ras <- rast(nrows = 2, ncols = 2, xmin = 0.5, xmax = 3.5, ymin = 0.5, ymax = 3.5,
+ resolution = 1, vals = c(NA, 1, 1, NA, NA, 1, NA, 1, 1))
+plot(ras)
+plot(locs.sf, pch = 20, cex = 3, add = TRUE)
+
+## Move point coordinates falling outside of raster
+moved <- points2nearestcell(locs.sf, ras)
+moved
+
+## Move points only if moving distance is lower than specified threshold:
+moved <- points2nearestcell(locs.sf, ras, distance = 100000)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
-\url{https://github.com/SEEG-Oxford/seegSDM/blob/master/man/nearestLand.Rd} and \url{https://stackoverflow.com/questions/27562076/if-raster-value-na-search-and-extract-the-nearest-non-na-pixel} and \url{http://stackoverflow.com/questions/26652629/extracting-a-value-from-a-raster-for-a-specific-point-based-on-the-closest-cell/26688361#26688361} and \url{https://rdrr.io/cran/spatstat/man/nearest.raster.point.html}.
+\url{https://search.r-project.org/CRAN/refmans/spatstat.geom/html/nearest.raster.point.html}
+and \url{https://search.r-project.org/CRAN/refmans/gecko/html/move.html}.
 }

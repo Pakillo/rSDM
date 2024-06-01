@@ -2,20 +2,38 @@
 % Please edit documentation in R/point_in_cell.R
 \name{point_in_cell}
 \alias{point_in_cell}
-\title{Do points (occurrences) fall within raster cells?}
+\title{Check if points (occurrences) fall within raster cells with data}
 \usage{
-point_in_cell(locs, ras, layer = 1)
+point_in_cell(locs = NULL, ras = NULL, layer = 1)
 }
 \arguments{
-\item{locs}{A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link[=locs2sp]{locs2sp()}}.}
+\item{locs}{An \code{\link[sf:sf]{sf::sf()}} or \code{\link[terra:SpatVector-class]{terra::SpatVector()}} object with point coordinates,
+e.g. as generated from \code{\link[=locs2sf]{locs2sf()}} or \code{\link[=locs2vect]{locs2vect()}}.}
 
-\item{ras}{Raster* object}
+\item{ras}{\code{\link[terra:SpatRaster-class]{terra::SpatRaster()}} object}
 
-\item{layer}{Integer. For RasterStack and RasterBrick objects, which layer to use to compare with point locations (default = 1).}
+\item{layer}{Integer. Raster layer to use for comparing with point locations (default = 1).}
 }
 \value{
 A logical vector.
 }
 \description{
-This function examines which points fall within a raster cell with data (not NA). Returns TRUE for points falling in a raster cell with data, and FALSE otherwise.
+This function examines which points fall within a raster cell with data (not NA).
+Returns TRUE for points falling in a raster cell with data, and FALSE otherwise.
+}
+\examples{
+locs <- data.frame(lon = c(1, 2, 1, 2), lat = c(1, 1, 2, 3))
+locs.sf <- locs2sf(locs)
+library(terra)
+ras <- rast(nrows = 2, ncols = 2, xmin = 0.5, xmax = 3.5, ymin = 0.5, ymax = 3.5,
+ resolution = 1, vals = c(NA, 1, 1, NA, NA, 1, NA, 1, 1))
+plot(ras)
+plot(locs.sf, add = TRUE)
+
+point_in_cell(locs.sf, ras)
+
+# adding column to original point data
+locs.sf$inras <- point_in_cell(locs.sf, ras)
+locs.sf
+
 }

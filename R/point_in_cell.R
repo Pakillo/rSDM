@@ -13,6 +13,7 @@
 #' @examples
 #' locs <- data.frame(lon = c(1, 2, 1, 2), lat = c(1, 1, 2, 3))
 #' locs.sf <- locs2sf(locs)
+#' library(terra)
 #' ras <- rast(nrows = 2, ncols = 2, xmin = 0.5, xmax = 3.5, ymin = 0.5, ymax = 3.5,
 #'  resolution = 1, vals = c(NA, 1, 1, NA, NA, 1, NA, 1, 1))
 #' plot(ras)

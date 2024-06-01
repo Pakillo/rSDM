@@ -7,99 +7,85 @@
 occmap(
   locs,
   ras = NULL,
-  bg = "ggmap",
-  proj = "+init=epsg:4326",
+  bg = "Esri.WorldImagery",
+  type = c("base", "ggplot", "leaflet"),
   pcol = "red",
   alpha = 1,
   psize = 1,
   add = FALSE,
-  leaflet.base = NULL,
-  mapmisc_server = "maptoolkit",
-  filename = "occmap.kmz",
+  prev.map = NULL,
   ...
 )
 }
 \arguments{
-\item{locs}{A matrix, dataframe, SpatialPoints or SpatialPointsDataFrame containing coordinates of species occurrences. If locs is a matrix or dataframe, it will be converted to a spatial object using \code{\link[=locs2sp]{locs2sp()}}.}
+\item{locs}{An \code{\link[sf:sf]{sf::sf()}} or \code{\link[terra:SpatVector-class]{terra::SpatVector()}} object with point coordinates,
+e.g. as generated from \code{\link[=locs2sf]{locs2sf()}} or \code{\link[=locs2vect]{locs2vect()}}.}
 
-\item{ras}{Raster* object to be used as background for points. Default is NULL, in which case a background map defined by \code{bg} will be used.}
+\item{ras}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster()}} object to be used as background for points.
+If NULL (default), a background map defined by \code{bg} will be used.}
 
-\item{bg}{Type of background map. Either
-'google' for Google maps background (using \code{\link[dismo:gmap]{dismo::gmap()}}) (note this requires a Google API key - currently not working!),
-'coast' for coastlines (using \code{coastsCoarse} from \pkg{rworldmap} package),
-'ggmap' for maps provided by \code{\link[ggmap:get_map]{ggmap::get_map()}} in \pkg{ggmap} package,
-'leaflet' for an interactive HTML map using \pkg{leaflet},
-'mapmisc' for using any of the layers available in \pkg{mapmisc} package, or
-'kml' for producing a KMZ file to be opened with Google Earth.}
+\item{bg}{Character. Type of background map to be used if \code{ras} is not provided.
+\code{bg} should be one of the providers listed in \code{\link[maptiles:get_tiles]{maptiles::get_tiles()}} if
+\code{type} is 'base' or 'ggplot', or one of the providers listed in
+\code{\link[leaflet:addProviderTiles]{leaflet::addProviderTiles()}} if \code{type} is 'leaflet'.}
 
-\item{proj}{Character string specifying the projection of coordinates data (see \code{\link[sp:is.projected]{sp::proj4string()}} or \url{http://spatialreference.org}). Default is geographic (unprojected) coordinates, datum WGS84. Not used if locs is already an Spatial object with defined projection.}
+\item{type}{Character. One of "base", "ggplot" or "leaflet" to define the type
+of map produced.}
 
 \item{pcol}{Colour to be used for points. Default is "red".}
 
-\item{alpha}{Colour transparency for points, between 0 (fully transparent) and 1 (fully opaque).}
+\item{alpha}{Colour transparency for points, between 0 (fully transparent)
+and 1 (fully opaque).}
 
 \item{psize}{Point size. Default is 1 (cex = 1).}
 
-\item{add}{Logical. Add these occurrences to a previous map? (e.g. for a new species). Default is FALSE. Note this feature doesn't work for all map types. For leaflet maps, when add = TRUE, a leaflet basemap (e.g. as produced by a previous call to occmap) must be provided (see \code{leaflet.base}).}
+\item{add}{Logical. Add \code{locs} coordinates to a previous 'base' map? (e.g. for a new species).}
 
-\item{leaflet.base}{Leaflet map to be used as basemap to add further points when add is TRUE.}
-
-\item{mapmisc_server}{character. Server/type of background map to be used when bg = "mapmisc". Run \code{\link[mapmisc:openmap]{mapmisc::osmTiles()}} to see all the available layers.}
-
-\item{filename}{Character. Path and filename of the KMZ file produced when bg = "kml".}
+\item{prev.map}{Map to be used as basemap to add further points
+(only applicable for "leaflet" and "ggplot" map types).}
 
 \item{...}{additional parameters to be passed to
-dismo::gmap if bg == 'google'
-plot if bg == 'coast'
-ggmap::get_map if bg == 'ggmap'
-leafletR::leaflet if bg == 'leaflet'
-raster::plot or raster::plotRGB if bg == 'mapmisc'
-See these functions help files for details.}
+\code{\link[terra:plot]{terra::plot()}} if \code{type = "base"}
+\code{\link[tidyterra:geom_spatraster]{tidyterra::geom_spatraster()}} if \code{type = "ggplot"}
+or \code{\link[leaflet:map-layers]{leaflet::addCircleMarkers()}} if \code{type = "leaflet"}.}
 }
 \value{
-A map (plot), unless \code{bg = 'KML'} in which case a kmz file is saved to be explored with Google Earth. In some cases, a raster layer, leaflet object, or ggplot object is returned in addition to the map.
+A map plus a leaflet or ggplot object, depending on \code{type}.
 }
 \description{
-Plot map of species occurrences (or any set of georeferenced points) on top of different background layers.
-}
-\details{
-If using ggmap and stamen maps, large regions seem to give problems.
+Plot map of species occurrences (or any set of point coordinates) on top of different background layers.
 }
 \examples{
-\dontrun{
-# Using acaule dataset from dismo package:
-library(dismo)
-data(acaule)
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+## Example coordinates
+locs <- data.frame(lon = c(-5.8, -5.5, -5.9), lat = c(35.7, 36.2, 36.5))
+locs <- locs2sf(locs, crs = 4326)
 
-occmap(locs = acaule)  # If 'ras' not provided, default is bg = "ggmap"
-occmap(acaule, bg = "coast")  # just coastlines as background map
-occmap(acaule, bg = "leaflet") # leaflet interactive map
+## Default map
+occmap(locs, psize = 6)
+occmap(locs, psize = 6, bg = "CartoDB.Positron") # Change background
 
-# Watercolor map from Stamen using ggmap
-# NB: use small regions, otherwise give error to download map tiles
-locs_redux <- subset(acaule, lon > -80 & lon < -60 & lat > -30 & lat < -10)
-occmap(locs = locs_redux, maptype = 'watercolor', source = 'stamen',
-           pcol = "darkgreen", psize = 4)
+## Interactive (leaflet) map
+occmap(locs, psize = 6, type = "leaflet")
+occmap(locs, psize = 6, type = "leaflet", bg = "CartoDB.Positron")
 
-# Plot occurrences in a specific country:
-occmap(locs = subset(acaule, country=="Bolivia"), bg = "leaflet")
-# (note there are georeferencing errors in the data)
+## ggplot map
+occmap(locs, psize = 6, type = "ggplot")
 
+## Adding points to a previous map
+new.locs <- data.frame(lon = c(-5.8, -5.4), lat = c(36.2, 36.5))
+new.locs.sf <- locs2sf(new.locs, crs = 4326)
 
-# Add transparency to points
-occmap(locs = acaule, pcol = "red", alpha = 0.5, bg = "coast")
-occmap(locs = acaule, pcol = "red", alpha = 0.5, bg = "leaflet")
+## base
+map <- occmap(locs, psize = 6)
+occmap(new.locs.sf, add = TRUE, psize = 6, pcol = "blue")
 
+## Adding points to a previous map (leaflet)
+map <- occmap(locs, psize = 6, type = "leaflet")
+occmap(new.locs.sf, prev.map = map, psize = 6, pcol = "blue")
 
-## Providing spatial objects ##
-data(meuse)
-coordinates(meuse) <- ~x+y
-proj4string(meuse) <- CRS("+init=epsg:28992")
-occmap(meuse)
-
-#alternatively, provide projection argument:
-data(meuse)
-coordinates(meuse) <- ~x+y
-occmap(meuse, proj = "+init=epsg:28992")
-}
+## Adding points to a previous map (ggplot)
+map <- occmap(locs, psize = 6, type = "ggplot")
+occmap(new.locs.sf, prev.map = map, psize = 6, pcol = "blue")
+\dontshow{\}) # examplesIf}
 }
