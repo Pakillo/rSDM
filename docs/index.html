@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Species distribution and niche modelling in R • rSDM</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,26 +33,23 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rSDM</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
+  <a href="reference/index.html">Reference</a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Pakillo/rSDM/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/Pakillo/rSDM/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -66,39 +65,56 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="rsdm-species-distribution-and-niche-modelling-in-r" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#rsdm-species-distribution-and-niche-modelling-in-r" class="anchor"></a>rSDM: Species distribution and niche modelling in R</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="rsdm-species-distribution-and-niche-modelling-in-r">rSDM: Species distribution and niche modelling in R<a class="anchor" aria-label="anchor" href="#rsdm-species-distribution-and-niche-modelling-in-r"></a>
+</h1></div>
 <p>Francisco Rodriguez-Sanchez</p>
 <!-- badges: start -->
-<p><a href="https://travis-ci.org/Pakillo/rSDM"><img src="https://travis-ci.org/Pakillo/rSDM.svg?branch=master" alt="Travis-CI Build Status"></a> <a href="http://hits.dwyl.com/Pakillo/rSDM"><img src="http://hits.dwyl.com/Pakillo/rSDM.svg" alt="HitCount since 2020-06-14"></a> <!-- badges: end --></p>
-<p><a href="https://pakillo.github.io/rSDM/" class="uri">https://pakillo.github.io/rSDM/</a></p>
+
+<p><a href="https://pakillo.github.io/rSDM/" class="external-link uri">https://pakillo.github.io/rSDM/</a></p>
 <p><img src="logo.jpg" height="200" width="100%"></p>
 <p>To install:</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"Pakillo/rSDM"</span>)</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Pakillo/rSDM"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/Pakillo/rSDM/">https://​github.com/​Pakillo/​rSDM/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/Pakillo/rSDM/issues">https://​github.com/​Pakillo/​rSDM/​issues</a>
-</li>
+<li><a href="https://github.com/Pakillo/rSDM/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/Pakillo/rSDM/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing rSDM</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Francisco Rodriguez-Sanchez <br><small class="roles"> Author, maintainer </small>  </li>
+</ul>
+</div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/Pakillo/rSDM/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/Pakillo/rSDM/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="http://hits.dwyl.com/Pakillo/rSDM" class="external-link"><img src="http://hits.dwyl.com/Pakillo/rSDM.svg" alt="HitCount since 2020-06-14"></a></li>
 </ul>
 </div>
 
@@ -107,11 +123,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Francisco Rodriguez-Sanchez.</p>
+  <p></p>
+<p>Developed by Francisco Rodriguez-Sanchez.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer>
@@ -119,6 +137,8 @@
 
   
 
+
+  
 
   </body>
 </html>
