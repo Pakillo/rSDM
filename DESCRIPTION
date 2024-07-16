@@ -18,7 +18,7 @@ Imports:
     maptiles,
     scales,
     sf,
-    terra,
+    terra (> 1.7-29),
     tidyterra
 RoxygenNote: 7.3.1
 Encoding: UTF-8
