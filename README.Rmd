@@ -16,6 +16,6 @@ https://pakillo.github.io/rSDM/
 To install:
 
 ```{r eval=FALSE}
-remotes::install_github("Pakillo/rSDM")
+install.packages("rSDM", repos = c("https://pakillo.r-universe.dev", "https://cloud.r-project.org"))
 ```
 

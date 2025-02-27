@@ -43,8 +43,8 @@ point_in_cell <- function(locs = NULL, ras = NULL, layer = 1) {
   }
 
   ## Get NA cells
-  rasvals <- terra::extract(ras, locs.terra, layer = layer, raw = TRUE, ID = FALSE)
+  rasvals <- terra::extract(ras[[layer]], locs.terra, raw = TRUE, ID = FALSE)
   missing <- is.na(rasvals)
-  missing[, "value"]
+  missing[, 1]
 
 }
