@@ -1,57 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/TODO.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/move-points-to-nearest-raster-cell.html</loc>
-  </url>
-  <url>
-    <loc>/articles/occmap.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/locs2sf.html</loc>
-  </url>
-  <url>
-    <loc>/reference/locs2sp.html</loc>
-  </url>
-  <url>
-    <loc>/reference/locs2vect.html</loc>
-  </url>
-  <url>
-    <loc>/reference/occmap.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_gmap.html</loc>
-  </url>
-  <url>
-    <loc>/reference/point_in_cell.html</loc>
-  </url>
-  <url>
-    <loc>/reference/points2nearestcell.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rSDM-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rSDM.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/TODO.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/move-points-to-nearest-raster-cell.html</loc></url>
+<url><loc>/articles/occmap.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/locs2sf.html</loc></url>
+<url><loc>/reference/locs2sp.html</loc></url>
+<url><loc>/reference/locs2vect.html</loc></url>
+<url><loc>/reference/occmap.html</loc></url>
+<url><loc>/reference/plot_gmap.html</loc></url>
+<url><loc>/reference/point_in_cell.html</loc></url>
+<url><loc>/reference/points2nearestcell.html</loc></url>
+<url><loc>/reference/rSDM-package.html</loc></url>
 </urlset>
+
