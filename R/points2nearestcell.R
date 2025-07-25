@@ -78,7 +78,7 @@ points2nearestcell <- function(locs = NULL,
     # find the nearest raster cell for each point with missing data
     nearest.cell <- class::knn1(coord.ras, coord.miss, cell.id)
 
-    new.coords <- coord.ras[nearest.cell, ]
+    new.coords <- coord.ras[nearest.cell, , drop = FALSE]
     colnames(new.coords) <- c("X_new", "Y_new")
     new.coords <- as.data.frame(new.coords)
 
